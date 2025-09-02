@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -49,6 +51,7 @@ import androidx.navigation.NavController
 @Composable
 fun TaskScreen(onBack: () -> Unit, navController: NavController) {
     var selectedTabIndex by remember { mutableIntStateOf(0) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -69,6 +72,8 @@ fun TaskScreen(onBack: () -> Unit, navController: NavController) {
         }
     ) { it ->
         Row(modifier = Modifier.padding(it)) {
+
+
             val tabItems = listOf(
                 TabItem(
                     title = "Pending Tasks",
@@ -82,6 +87,10 @@ fun TaskScreen(onBack: () -> Unit, navController: NavController) {
                 )
 
             )
+
+            val pagerState = rememberPagerState(
+                pageCount = { tabItems.size },
+            )
             Column(modifier = Modifier.fillMaxSize()) {
                 TabRow(selectedTabIndex = selectedTabIndex) {
                     tabItems.forEachIndexed { index, item ->
@@ -94,11 +103,10 @@ fun TaskScreen(onBack: () -> Unit, navController: NavController) {
                                 Text(text = item.title)
                             },
                             icon = {
-                                Icon(imageVector = if (index==selectedTabIndex)
-                                {
-                                    item.selectedIcon
-                                }
-                                else item.unSelectedIcon,
+                                Icon(
+                                    imageVector = if (index == selectedTabIndex) {
+                                        item.selectedIcon
+                                    } else item.unSelectedIcon,
                                     contentDescription = null
                                 )
                             }
@@ -109,8 +117,19 @@ fun TaskScreen(onBack: () -> Unit, navController: NavController) {
 
             }
 
-        }
 
+
+            HorizontalPager(state = pagerState, modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+            ) { index->
+
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center)
+                {
+                    Text(text = tabItems[index].title)
+                }
+            }
+        }
     }
 
     Box(contentAlignment = Alignment.BottomEnd) {
