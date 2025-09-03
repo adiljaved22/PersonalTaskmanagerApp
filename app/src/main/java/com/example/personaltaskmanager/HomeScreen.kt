@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 fun HomeScreen(
     NavigateToTask: () -> Unit,
     NavigateToEvents: () -> Unit
+
 ) {
     Column(
         modifier = Modifier

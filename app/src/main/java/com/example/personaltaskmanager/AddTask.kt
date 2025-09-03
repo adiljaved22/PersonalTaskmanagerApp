@@ -1,5 +1,6 @@
 package com.example.personaltaskmanager
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -19,9 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun AddTask(onBack: () -> Unit) {
+fun AddTask(onBack: () -> Unit,viewModel: TaskViewModel = viewModel()) {
     var name by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
 
@@ -33,11 +35,16 @@ fun AddTask(onBack: () -> Unit) {
     {
         Text("Add Tasks ", fontSize = 24.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(10.dp))
-        TextField(value = name, onValueChange = { name = it }, label = { Text("Task Name  ") })
+        TextField(value = name, onValueChange = { name = it }, label = { Text("Task Name  ") },)
         Spacer(modifier = Modifier.height(10.dp))
         TextField(value = location, onValueChange = { location= it }, label = { Text("Add Location") })
         Spacer(modifier = Modifier.height(10.dp))
-        Button(onClick = { onBack() }) {
+        Button(onClick = {
+            Log.e("Add Task","$name $location")
+            viewModel.addTask(name, location)
+
+             onBack()
+        }) {
             Text("Add")
         }
     }

@@ -1,56 +1,56 @@
 package com.example.personaltaskmanager
 
-import android.R.attr.navigationIcon
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddTask
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Pending
-import androidx.compose.material.icons.filled.TaskAlt
 import androidx.compose.material.icons.outlined.AddTask
 import androidx.compose.material.icons.outlined.Pending
-import androidx.compose.material.icons.outlined.TaskAlt
-import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBarDefaults.colors
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskScreen(onBack: () -> Unit, navController: NavController) {
-    var selectedTabIndex by remember { mutableIntStateOf(0) }
+    val tabItems = listOf(
+        TabItem(
+            title = "Pending Tasks",
+            unSelectedIcon = Icons.Outlined.Pending,
+            selectedIcon = Icons.Filled.Pending
+        ),
+        TabItem(
+            title = "Completed Tasks",
+            unSelectedIcon = Icons.Outlined.AddTask,
+            selectedIcon = Icons.Filled.AddTask
+        )
+    )
+
+    val pagerState = rememberPagerState(pageCount = { tabItems.size })
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -70,79 +70,61 @@ fun TaskScreen(onBack: () -> Unit, navController: NavController) {
                 )
             )
         }
-    ) { it ->
-        Row(modifier = Modifier.padding(it)) {
+    ) { innerPadding ->
 
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
 
-            val tabItems = listOf(
-                TabItem(
-                    title = "Pending Tasks",
-                    unSelectedIcon = Icons.Outlined.Pending,
-                    selectedIcon = Icons.Filled.Pending
-                ),
-                TabItem(
-                    title = "Completed Tasks",
-                    unSelectedIcon = Icons.Outlined.AddTask,
-                    selectedIcon = Icons.Filled.AddTask
-                )
-
-            )
-
-            val pagerState = rememberPagerState(
-                pageCount = { tabItems.size },
-            )
-            Column(modifier = Modifier.fillMaxSize()) {
-                TabRow(selectedTabIndex = selectedTabIndex) {
-                    tabItems.forEachIndexed { index, item ->
-                        Tab(
-                            selected = index == selectedTabIndex,
-                            onClick = {
-                                selectedTabIndex = index
-                            },
-                            text = {
-                                Text(text = item.title)
-                            },
-                            icon = {
-                                Icon(
-                                    imageVector = if (index == selectedTabIndex) {
-                                        item.selectedIcon
-                                    } else item.unSelectedIcon,
-                                    contentDescription = null
-                                )
+            TabRow(selectedTabIndex = pagerState.currentPage) {
+                tabItems.forEachIndexed { index, item ->
+                    Tab(
+                        selected = index == pagerState.currentPage,
+                        onClick = {
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(index)
                             }
-
-                        )
-                    }
+                        },
+                        text = { Text(item.title) },
+                        icon = {
+                            Icon(
+                                imageVector = if (index == pagerState.currentPage) {
+                                    item.selectedIcon
+                                } else item.unSelectedIcon,
+                                contentDescription = null
+                            )
+                        }
+                    )
                 }
-
             }
 
 
-
-            HorizontalPager(state = pagerState, modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-            ) { index->
-
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center)
-                {
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxSize()
+            ) { index ->
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
                     Text(text = tabItems[index].title)
                 }
             }
         }
     }
 
-    Box(contentAlignment = Alignment.BottomEnd) {
+    Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier.fillMaxSize()) {
         FloatingActionButton(
             modifier = Modifier.padding(20.dp),
             contentColor = Color.White,
             containerColor = colorResource(id = R.color.teal_700),
             onClick = {
                 navController.navigate("AddTask")
-            }) {
-
+            }
+        ) {
             Icon(imageVector = Icons.Default.Add, contentDescription = null)
         }
     }
-
 }

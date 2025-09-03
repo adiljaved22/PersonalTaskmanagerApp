@@ -22,11 +22,14 @@ fun Navigation() {
         }
         composable("Events")
         {
-            EventsScreen(onBack = { navController.popBackStack() })
+            EventsScreen(navController = navController, onBack = { navController.popBackStack() })
         }
         composable("AddTask")
         {
             AddTask(onBack = { navController.popBackStack() })
+        }
+        composable("AddEvents"){
+            AddEvents(onBack = {navController.popBackStack()})
         }
 
     }
