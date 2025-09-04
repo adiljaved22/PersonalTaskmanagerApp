@@ -1,41 +1,47 @@
 package com.example.personaltaskmanager
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddTask
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Pending
 import androidx.compose.material.icons.outlined.AddTask
 import androidx.compose.material.icons.outlined.Pending
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
+
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
+import java.nio.file.WatchEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskScreen(onBack: () -> Unit, navController: NavController) {
+fun TaskScreen(
+    onBack: () -> Unit,
+    navController: NavController,
+    viewModel: TaskViewModel = viewModel()
+) {
+    LaunchedEffect(Unit) {
+        viewModel.loadTasks()
+    }
+    val pending by viewModel.pendingTask.collectAsState()
+    val completed by viewModel.completedTasks.collectAsState()
     val tabItems = listOf(
         TabItem(
             title = "Pending Tasks",
@@ -69,7 +75,17 @@ fun TaskScreen(onBack: () -> Unit, navController: NavController) {
                     containerColor = colorResource(id = R.color.teal_700)
                 )
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                contentColor = Color.White,
+                containerColor = colorResource(id = R.color.teal_700),
+                onClick = { navController.navigate("AddTask") }
+            ) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = null)
+            }
         }
+
     ) { innerPadding ->
 
         Column(
@@ -100,31 +116,77 @@ fun TaskScreen(onBack: () -> Unit, navController: NavController) {
                 }
             }
 
-
             HorizontalPager(
                 state = pagerState,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.weight(1f)
             ) { index ->
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = tabItems[index].title)
+                if (index == 0) {
+                    // Pending Tasks
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(top = 15.dp, bottom = 15.dp),
+                        verticalArrangement = Arrangement.spacedBy(15.dp)
+                    ) {
+                        items(pending) { task ->
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                elevation = CardDefaults.cardElevation(6.dp),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(10.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text("Title: ${task.title}")
+                                        Text("Description: ${task.description}")
+                                        Text("Location: ${task.location}")
+                                    }
+                                    Button(onClick = { viewModel.updateTask(task.id) }) {
+                                        Text("Task Done")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else if (index == 1) {
+                    // Completed Tasks
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(top = 15.dp, bottom = 15.dp),
+                        verticalArrangement = Arrangement.spacedBy(15.dp)
+                    ) {
+                        items(completed) { tasks ->
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                elevation = CardDefaults.cardElevation(6.dp),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(10.dp),
+                                    horizontalArrangement = Arrangement.SpaceEvenly
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text("Title: ${tasks.title}")
+                                        Text("Description: ${tasks.description}")
+                                        Text("Location: ${tasks.location}")
+                                    }
+                                    IconButton(onClick = { viewModel.delete(tasks.id) }) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Delete,
+                                            contentDescription = null
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
-        }
-    }
-
-    Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier.fillMaxSize()) {
-        FloatingActionButton(
-            modifier = Modifier.padding(20.dp),
-            contentColor = Color.White,
-            containerColor = colorResource(id = R.color.teal_700),
-            onClick = {
-                navController.navigate("AddTask")
-            }
-        ) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = null)
         }
     }
 }

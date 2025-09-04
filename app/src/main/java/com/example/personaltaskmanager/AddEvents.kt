@@ -59,20 +59,16 @@ fun AddEvents(onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add Events") },
-                actions = {
-                    IconButton(onClick = { onBack() })
-                    {
+                title = { Text("Add Events") }, actions = {
+                    IconButton(onClick = { onBack() }) {
                         Icon(imageVector = Icons.Filled.Home, contentDescription = null)
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
+                }, colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = colorResource(id = R.color.teal_700)
                 )
             )
 
-        }
-    ) { paddingValues ->
+        }) { paddingValues ->
         Column(
             modifier = Modifier.padding(paddingValues),
 
@@ -87,8 +83,7 @@ fun AddEvents(onBack: () -> Unit) {
         modifier = Modifier.fillMaxWidth(1f),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-    )
-    {
+    ) {
         TextField(
             modifier = Modifier.fillMaxWidth(0.9f),
             value = eventName,
@@ -108,8 +103,7 @@ fun AddEvents(onBack: () -> Unit) {
             enabled = false,
             modifier = Modifier
                 .fillMaxWidth(0.9f)
-                .clickable { openDialogBox = true }
-        )
+                .clickable { openDialogBox = true })
         Spacer(modifier = Modifier.height(15.dp))
         TextField(
             value = time,
@@ -128,38 +122,31 @@ fun AddEvents(onBack: () -> Unit) {
 
     }
     if (openDialogBox) {
-        DatePickerDialog(
-            onDismissRequest = { openDialogBox = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                    date = sdf.format(Date(state.selectedDateMillis ?: 0L))
+        DatePickerDialog(onDismissRequest = { openDialogBox = false }, confirmButton = {
+            TextButton(onClick = {
+                val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                date = sdf.format(Date(state.selectedDateMillis ?: 0L))
 
-                    openDialogBox = false
-                }) {
-                    Text("OK")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { openDialogBox = false }) {
-                    Text("Cancel")
-                }
+                openDialogBox = false
+            }) {
+                Text("OK")
             }
-        ) {
+
+        }, dismissButton = {
+            TextButton(onClick = { openDialogBox = false }) {
+                Text("Cancel")
+            }
+        }) {
             DatePicker(state = state)
         }
     }
     val calendar = Calendar.getInstance()
     if (openTimeDialog) {
         TimePickerDialog(
-            LocalContext.current,
-            { _, hour: Int, minute: Int ->
+            LocalContext.current, { _, hour: Int, minute: Int ->
                 time = String.format("%02d:%02d", hour, minute)
                 openTimeDialog = false
-            },
-            calendar.get(Calendar.HOUR_OF_DAY),
-            calendar.get(Calendar.MINUTE),
-            true
+            }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true
         ).show()
     }
 
