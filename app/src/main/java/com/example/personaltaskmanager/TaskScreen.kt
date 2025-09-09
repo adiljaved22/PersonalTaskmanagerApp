@@ -152,6 +152,7 @@ fun TaskScreen(
                         }
                     }
                 } else if (index == 1) {
+
                     // Completed Tasks
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
@@ -175,7 +176,7 @@ fun TaskScreen(
                                         Text("Description: ${tasks.description}")
                                         Text("Location: ${tasks.location}")
                                     }
-                                    IconButton(onClick = { viewModel.delete(tasks.id) }) {
+                                    IconButton( onClick = { viewModel.delete(tasks.id) },) {
                                         Icon(
                                             imageVector = Icons.Filled.Delete,
                                             contentDescription = null

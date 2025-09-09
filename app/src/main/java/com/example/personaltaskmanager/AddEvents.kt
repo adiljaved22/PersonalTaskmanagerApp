@@ -39,6 +39,7 @@ import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -47,7 +48,7 @@ import kotlin.toString
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEvents(onBack: () -> Unit) {
+fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit) {
     var eventName by remember { mutableStateOf("") }
     var eventLocation by remember { mutableStateOf("") }
     var date by remember { mutableStateOf("") }
@@ -115,7 +116,9 @@ fun AddEvents(onBack: () -> Unit) {
                 .clickable { openTimeDialog = true })
         Spacer(modifier = Modifier.height(15.dp))
 
-        Button(onClick = { onBack() }) {
+        Button(onClick = {
+            viewModel.addEvent(0, eventName, eventLocation, date,
+                time.substring(0,2).toInt(), time.substring(3,5).toInt())  ;onBack() }) {
             Text("Add")
 
         }
@@ -124,7 +127,7 @@ fun AddEvents(onBack: () -> Unit) {
     if (openDialogBox) {
         DatePickerDialog(onDismissRequest = { openDialogBox = false }, confirmButton = {
             TextButton(onClick = {
-                val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                 date = sdf.format(Date(state.selectedDateMillis ?: 0L))
 
                 openDialogBox = false
@@ -144,7 +147,7 @@ fun AddEvents(onBack: () -> Unit) {
     if (openTimeDialog) {
         TimePickerDialog(
             LocalContext.current, { _, hour: Int, minute: Int ->
-                time = String.format("%02d:%02d", hour, minute)
+                time = String.format("%02d:%02d:00", hour, minute)
                 openTimeDialog = false
             }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true
         ).show()

@@ -97,7 +97,7 @@ fun AddTask(onBack: () -> Unit, viewModel: TaskViewModel = viewModel()) {
                 Spacer(modifier = Modifier.height(10.dp))
                 Button(onClick = {
 
-                    viewModel.addTask(name, description, location)
+                    viewModel.addTask(0,name, description, location,false)
 
                     onBack()
                 }) {
