@@ -10,8 +10,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -56,7 +60,18 @@ fun AddTask(onBack: () -> Unit, viewModel: TaskViewModel = viewModel()) {
                         containerColor = colorResource(id = R.color.teal_700),
                     ),
 
-                    title = { Text("Add Task") })
+                    title = { Text("Add Task") },
+
+                    actions = {
+                        IconButton(onClick = { onBack() }) {
+                            Icon(
+                                imageVector = Icons.Filled.Home,
+                                contentDescription = null,
+                                tint = Color.White
+                            )
+                        }
+                    }
+                )
             },
 
         ) { paddingValues ->
@@ -82,6 +97,7 @@ fun AddTask(onBack: () -> Unit, viewModel: TaskViewModel = viewModel()) {
                         .fillMaxWidth()
                         .padding(start = 10.dp, end = 10.dp),
                     value = name,
+                    singleLine = true,
                     onValueChange = { name = it },
                     label = {
                         Text(
@@ -95,6 +111,7 @@ fun AddTask(onBack: () -> Unit, viewModel: TaskViewModel = viewModel()) {
                         .fillMaxWidth()
                         .padding(start = 10.dp, end = 10.dp),
                     value = description,
+                    singleLine = true,
                     onValueChange = { description = it },
                     label = {
                         Text(
@@ -109,6 +126,7 @@ fun AddTask(onBack: () -> Unit, viewModel: TaskViewModel = viewModel()) {
                         .fillMaxWidth()
                         .padding(start = 10.dp, end = 10.dp),
                     value = location,
+                    singleLine = true,
                     onValueChange = { location = it },
                     label = {
                         Text(

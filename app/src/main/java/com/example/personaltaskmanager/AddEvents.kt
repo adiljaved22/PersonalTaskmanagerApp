@@ -36,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.ui.node.ModifierNodeElement
@@ -70,14 +71,18 @@ fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add Events") }, actions = {
+                colors = TopAppBarDefaults.topAppBarColors(
+                    titleContentColor = Color.White,
+                    containerColor = colorResource(id = R.color.teal_700),
+                ),
+                title = { Text("Add Events") },
+                actions = {
                     IconButton(onClick = { onBack() }) {
-                        Icon(imageVector = Icons.Filled.Home, contentDescription = null)
+                        Icon(imageVector = Icons.Filled.Home, contentDescription = null, tint = Color.White)
                     }
-                }, colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = colorResource(id = R.color.teal_700)
+                },
                 )
-            )
+
 
         }) { paddingValues ->
         Column(
@@ -98,17 +103,21 @@ fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit) {
         TextField(
             modifier = Modifier.fillMaxWidth(0.9f),
             value = eventName,
+            singleLine = true,
             onValueChange = { eventName = it },
             label = {
                 Text(
+
                     text = nameError.ifEmpty { "Name" },
                     color = if (nameError.isNotEmpty()) Red else Unspecified
+
                 )
             })
         Spacer(modifier = Modifier.height(15.dp))
         TextField(
             modifier = Modifier.fillMaxWidth(0.9f),
             value = eventLocation,
+            singleLine = true,
             onValueChange = { eventLocation = it },
             label = {
                 Text(
@@ -119,6 +128,7 @@ fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit) {
         Spacer(modifier = Modifier.height(15.dp))
         TextField(
             value = date,
+            singleLine = true,
             onValueChange = { date = it },
             label = {
                 Text(
@@ -133,6 +143,7 @@ fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit) {
         Spacer(modifier = Modifier.height(15.dp))
         TextField(
             value = time,
+            singleLine = true,
             onValueChange = { time = it },
             label = {
                 Text(

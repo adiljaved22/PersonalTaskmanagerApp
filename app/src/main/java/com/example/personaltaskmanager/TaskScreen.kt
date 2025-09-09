@@ -67,20 +67,23 @@ fun TaskScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Task") },
-                actions = {
-                    IconButton(onClick = { onBack() }) {
-                        Icon(
-                            imageVector = Icons.Filled.Home,
-                            contentDescription = "Home",
-                            tint = Color.White
-                        )
-                    }
-                },
                 colors = TopAppBarDefaults.topAppBarColors(
+                    titleContentColor = Color.White,
                     containerColor = colorResource(id = R.color.teal_700)
-                )
-            )
+                ),
+                    title = { Text("Task") },
+                    actions = {
+                        IconButton(onClick = { onBack() }) {
+                            Icon(
+                                imageVector = Icons.Filled.Home,
+                                contentDescription = "Home",
+                                tint = Color.White
+                            )
+                        }
+                    },
+
+                    )
+
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -187,12 +190,12 @@ fun TaskScreen(
                                     }) {
                                         Icon(Icons.Default.Delete, contentDescription = null)
                                     }
-                                   /* IconButton(onClick = { viewModel.delete(task.id) }) {
-                                        Icon(
-                                            imageVector = Icons.Filled.Delete,
-                                            contentDescription = null
-                                        )
-                                    }*/
+                                    /* IconButton(onClick = { viewModel.delete(task.id) }) {
+                                         Icon(
+                                             imageVector = Icons.Filled.Delete,
+                                             contentDescription = null
+                                         )
+                                     }*/
 
 
                                 }

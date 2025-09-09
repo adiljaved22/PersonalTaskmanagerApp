@@ -92,6 +92,10 @@ fun EventsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    titleContentColor = Color.White,
+                    containerColor = colorResource(id = R.color.teal_700),
+                ),
                 title = { Text("Events") },
                 actions = {
                     IconButton(onClick = { onBack() }) {
@@ -102,10 +106,9 @@ fun EventsScreen(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = colorResource(id = R.color.teal_700)
+
                 )
-            )
+
         }
     ) { innerPadding ->
 
