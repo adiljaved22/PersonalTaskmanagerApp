@@ -1,6 +1,7 @@
 package com.example.personaltaskmanager
 
 import android.app.TimePickerDialog
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,11 +36,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color.Companion.Red
+import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -53,6 +57,12 @@ fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit) {
     var eventLocation by remember { mutableStateOf("") }
     var date by remember { mutableStateOf("") }
     var time by remember { mutableStateOf("") }
+    var nameError by remember { mutableStateOf("") }
+    var locationError by remember { mutableStateOf("") }
+
+    val context = LocalContext.current
+    var dateError by remember { mutableStateOf("") }
+    var timeError by remember { mutableStateOf("") }
     val state = rememberDatePickerState()
     var openDialogBox by remember { mutableStateOf(false) }
     var openTimeDialog by remember { mutableStateOf(false) }
@@ -89,18 +99,33 @@ fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit) {
             modifier = Modifier.fillMaxWidth(0.9f),
             value = eventName,
             onValueChange = { eventName = it },
-            label = { Text("Event Name") })
+            label = {
+                Text(
+                    text = nameError.ifEmpty { "Name" },
+                    color = if (nameError.isNotEmpty()) Red else Unspecified
+                )
+            })
         Spacer(modifier = Modifier.height(15.dp))
         TextField(
             modifier = Modifier.fillMaxWidth(0.9f),
             value = eventLocation,
             onValueChange = { eventLocation = it },
-            label = { Text("Event Location") })
+            label = {
+                Text(
+                    text = locationError.ifEmpty { "Location" },
+                    color = if (locationError.isNotEmpty()) Red else Unspecified
+                )
+            })
         Spacer(modifier = Modifier.height(15.dp))
         TextField(
             value = date,
             onValueChange = { date = it },
-            label = { Text("Event Date") },
+            label = {
+                Text(
+                    text = dateError.ifEmpty { "Date" },
+                    color = if (dateError.isNotEmpty()) Red else Unspecified
+                )
+            },
             enabled = false,
             modifier = Modifier
                 .fillMaxWidth(0.9f)
@@ -109,7 +134,12 @@ fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit) {
         TextField(
             value = time,
             onValueChange = { time = it },
-            label = { Text("Event Time") },
+            label = {
+                Text(
+                    text = timeError.ifEmpty { "Time" },
+                    color = if (timeError.isNotEmpty()) Red else Unspecified
+                )
+            },
             enabled = false,
             modifier = Modifier
                 .fillMaxWidth(0.9f)
@@ -117,8 +147,39 @@ fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit) {
         Spacer(modifier = Modifier.height(15.dp))
 
         Button(onClick = {
-            viewModel.addEvent(0, eventName, eventLocation, date,
-                time.substring(0,2).toInt(), time.substring(3,5).toInt())  ;onBack() }) {
+            nameError = when {
+                eventName.isBlank() -> " Enter Name"
+                else -> ""
+            }
+            locationError = when {
+                eventLocation.isBlank() -> "Enter Location"
+                else -> ""
+            }
+            dateError = when {
+                date.isBlank() -> "Enter Date"
+                else -> ""
+            }
+            timeError = when {
+                time.isBlank() -> "Enter Time"
+                else -> ""
+            }
+            if (eventName.isNotEmpty() && eventLocation.isNotEmpty() && date.isNotEmpty() && time.isNotEmpty()) {
+                viewModel.addEvent(
+                    0, eventName, eventLocation, date,
+                    time.substring(0, 2).toInt(), time.substring(3, 5).toInt()
+                )
+                onBack()
+            } else {
+                Toast.makeText(context, "Fill All the Fields", Toast.LENGTH_SHORT)
+                    .show()
+            }
+
+
+        }
+
+        )
+        {
+
             Text("Add")
 
         }

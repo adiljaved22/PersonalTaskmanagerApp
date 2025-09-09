@@ -1,6 +1,7 @@
 package com.example.personaltaskmanager
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Red
+import androidx.compose.ui.graphics.Color.Companion.Unspecified
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 
 import androidx.compose.ui.text.font.FontWeight
@@ -37,6 +41,10 @@ fun AddTask(onBack: () -> Unit, viewModel: TaskViewModel = viewModel()) {
     var name by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
+    var nameError by remember { mutableStateOf("") }
+    var locationError by remember { mutableStateOf("") }
+    var descriptionError by remember { mutableStateOf("") }
+    val context = LocalContext.current
 
 
     Scaffold(
@@ -62,7 +70,6 @@ fun AddTask(onBack: () -> Unit, viewModel: TaskViewModel = viewModel()) {
             ) {
 
 
-
             Spacer(modifier = Modifier.height(20.dp))
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -76,7 +83,12 @@ fun AddTask(onBack: () -> Unit, viewModel: TaskViewModel = viewModel()) {
                         .padding(start = 10.dp, end = 10.dp),
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Task Name  ") })
+                    label = {
+                        Text(
+                            text = nameError.ifEmpty { "Name" },
+                            color = if (nameError.isNotEmpty()) Red else Unspecified
+                        )
+                    })
                 Spacer(modifier = Modifier.height(10.dp))
                 TextField(
                     modifier = Modifier
@@ -84,7 +96,12 @@ fun AddTask(onBack: () -> Unit, viewModel: TaskViewModel = viewModel()) {
                         .padding(start = 10.dp, end = 10.dp),
                     value = description,
                     onValueChange = { description = it },
-                    label = { Text("Add Description") })
+                    label = {
+                        Text(
+                            text = descriptionError.ifEmpty { "description" },
+                            color = if (descriptionError.isNotEmpty()) Red else Unspecified
+                        )
+                    })
                 Spacer(modifier = Modifier.height(10.dp))
 
                 TextField(
@@ -93,13 +110,34 @@ fun AddTask(onBack: () -> Unit, viewModel: TaskViewModel = viewModel()) {
                         .padding(start = 10.dp, end = 10.dp),
                     value = location,
                     onValueChange = { location = it },
-                    label = { Text("Add Location") })
+                    label = {
+                        Text(
+                            text = locationError.ifEmpty { "location" },
+                            color = if (locationError.isNotEmpty()) Red else Unspecified
+                        )
+                    })
                 Spacer(modifier = Modifier.height(10.dp))
                 Button(onClick = {
+                    nameError = when {
+                        name.isBlank() -> " Enter Name"
+                        else -> ""
+                    }
+                    descriptionError = when {
+                        description.isBlank() -> "Enter Description"
+                        else -> ""
+                    }
+                    locationError = when {
+                        location.isBlank() -> "Enter Location"
+                        else -> ""
+                    }
+                    if (name.isNotEmpty() && description.isNotEmpty() && location.isNotEmpty()) {
+                        viewModel.addTask(0, name, description, location, false)
+                        onBack()
+                    } else {
+                        Toast.makeText(context, "Fill All the Fields", Toast.LENGTH_SHORT)
+                            .show()
+                    }
 
-                    viewModel.addTask(0,name, description, location,false)
-
-                    onBack()
                 }) {
                     Text("Add")
                 }

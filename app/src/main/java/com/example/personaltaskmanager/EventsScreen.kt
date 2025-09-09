@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddTask
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.EventAvailable
 import androidx.compose.material.icons.filled.Home
@@ -24,6 +25,8 @@ import androidx.compose.material.icons.outlined.AddTask
 import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.EventAvailable
 import androidx.compose.material.icons.outlined.Pending
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,7 +43,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -63,6 +69,8 @@ fun EventsScreen(
     LaunchedEffect(Unit) {
         viewModel.loadEvents()
     }
+    var dialogBox by remember { mutableStateOf(false) }
+
     val coming by viewModel.comingEvent.collectAsState()
     val past by viewModel.pastEvent.collectAsState()
     val tabItems = listOf(
@@ -158,10 +166,47 @@ fun EventsScreen(
                                         Text("Date: ${task.event_date}")
                                         Text("Time: ${task.event_time}")
                                     }
+                                    if (dialogBox) {
+                                        AlertDialog(
+                                            onDismissRequest = { dialogBox = false },
+                                            title = { Text("Are you want To delete this item? ") },
+
+                                            confirmButton = {
+                                                Button(onClick = {
+                                                    viewModel.deleteEvent(task.id)
+
+
+                                                    dialogBox = false
+
+                                                }) {
+                                                    Text("Confirm")
+                                                }
+                                            },
+
+                                            dismissButton = {
+                                                Button(onClick = { dialogBox = false }) {
+                                                    Text("Dismiss")
+                                                }
+                                            }
+                                        )
+                                    }
+
+                                    IconButton(onClick = {
+
+                                        dialogBox = true
+                                    }) {
+                                        Icon(Icons.Default.Delete, contentDescription = null)
+                                    }
                                 }
                             }
-
                         }
+                        /* IconButton(onClick = { viewModel.deleteEvent(task.id) }) {
+                             Icon(
+                                 imageVector = Icons.Default.Delete,
+                                 contentDescription = null
+                             )
+                         }*/
+
                     }
                 } else if (index == 1) {
                     LazyColumn(
@@ -186,6 +231,37 @@ fun EventsScreen(
                                         Text("Location: ${tasks.location}")
                                         Text("Date: ${tasks.event_date}")
                                         Text("Time: ${tasks.event_time}")
+                                    }
+                                    if (dialogBox) {
+                                        AlertDialog(
+                                            onDismissRequest = { dialogBox = false },
+                                            title = { Text("Are you want To delete this item? ") },
+
+                                            confirmButton = {
+                                                Button(onClick = {
+                                                    viewModel.deleteEvent(tasks.id)
+
+
+                                                    dialogBox = false
+
+                                                }) {
+                                                    Text("Confirm")
+                                                }
+                                            },
+
+                                            dismissButton = {
+                                                Button(onClick = { dialogBox = false }) {
+                                                    Text("Dismiss")
+                                                }
+                                            }
+                                        )
+                                    }
+
+                                    IconButton(onClick = {
+
+                                        dialogBox = true
+                                    }) {
+                                        Icon(Icons.Default.Delete, contentDescription = null)
                                     }
                                 }
                             }

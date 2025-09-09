@@ -95,16 +95,16 @@ class TaskViewModel : ViewModel() {
 
                 val formattedTime = String.format("%02d:%02d:00", hour, minute) // HH:mm:ss
                 val newevent = Events(
-                    id =idd   ,
+                    id = idd,
                     event_name = name,
                     location = location,
-                     event_date =date,
-               event_time =formattedTime, // ensure HH:mm:ss
+                    event_date = date,
+                    event_time = formattedTime, // ensure HH:mm:ss
 
 
                 )
-                val response=Services.createEvent(newevent)
-                if(response.isSuccessful) {
+                val response = Services.createEvent(newevent)
+                if (response.isSuccessful) {
                     loadEvents()
                 }
 
@@ -129,11 +129,25 @@ class TaskViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 _completedTasks.value = _completedTasks.value.filter { it.id != taskId }
+                _pendingTasks.value=_pendingTasks.value.filter { it.id!=taskId }
                 Services.deleteTask(taskId)
                 loadTasks()
             } catch (e: Exception) {
                 e.printStackTrace()
                 loadTasks()
+            }
+        }
+    }
+
+    fun deleteEvent(eventId: Int) {
+        viewModelScope.launch {
+            try {
+                _pastEvent.value = _pastEvent.value.filter { it.id != eventId }
+                _comingEvent.value = _comingEvent.value.filter { it.id != eventId }
+                Services.delete(eventId)
+                loadEvents()
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }

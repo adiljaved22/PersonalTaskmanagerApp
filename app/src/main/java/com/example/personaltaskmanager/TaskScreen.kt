@@ -14,12 +14,17 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Pending
 import androidx.compose.material.icons.outlined.AddTask
 import androidx.compose.material.icons.outlined.Pending
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.DoneOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,6 +45,7 @@ fun TaskScreen(
     LaunchedEffect(Unit) {
         viewModel.loadTasks()
     }
+    var dialogBox by remember { mutableStateOf(false) }
     val pending by viewModel.pendingTask.collectAsState()
     val completed by viewModel.completedTasks.collectAsState()
     val tabItems = listOf(
@@ -144,9 +150,51 @@ fun TaskScreen(
                                         Text("Description: ${task.description}")
                                         Text("Location: ${task.location}")
                                     }
-                                    Button(onClick = { viewModel.updateTask(task.id) }) {
-                                        Text("Task Done")
+                                    IconButton(onClick = { viewModel.updateTask(task.id) }) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.DoneOutline,
+                                            contentDescription = null
+                                        )
                                     }
+                                    if (dialogBox) {
+                                        AlertDialog(
+                                            onDismissRequest = { dialogBox = false },
+                                            title = { Text("Are you want To delete this item? ") },
+
+                                            confirmButton = {
+                                                Button(onClick = {
+                                                    viewModel.delete(task.id)
+
+
+                                                    dialogBox = false
+
+                                                }) {
+                                                    Text("Confirm")
+                                                }
+                                            },
+
+                                            dismissButton = {
+                                                Button(onClick = { dialogBox = false }) {
+                                                    Text("Dismiss")
+                                                }
+                                            }
+                                        )
+                                    }
+
+                                    IconButton(onClick = {
+
+                                        dialogBox = true
+                                    }) {
+                                        Icon(Icons.Default.Delete, contentDescription = null)
+                                    }
+                                   /* IconButton(onClick = { viewModel.delete(task.id) }) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Delete,
+                                            contentDescription = null
+                                        )
+                                    }*/
+
+
                                 }
                             }
                         }
@@ -176,11 +224,36 @@ fun TaskScreen(
                                         Text("Description: ${tasks.description}")
                                         Text("Location: ${tasks.location}")
                                     }
-                                    IconButton( onClick = { viewModel.delete(tasks.id) },) {
-                                        Icon(
-                                            imageVector = Icons.Filled.Delete,
-                                            contentDescription = null
+                                    if (dialogBox) {
+                                        AlertDialog(
+                                            onDismissRequest = { dialogBox = false },
+                                            title = { Text("Are you want To delete this item? ") },
+
+                                            confirmButton = {
+                                                Button(onClick = {
+                                                    viewModel.delete(tasks.id)
+
+
+                                                    dialogBox = false
+
+                                                }) {
+                                                    Text("Confirm")
+                                                }
+                                            },
+
+                                            dismissButton = {
+                                                Button(onClick = { dialogBox = false }) {
+                                                    Text("Dismiss")
+                                                }
+                                            }
                                         )
+                                    }
+
+                                    IconButton(onClick = {
+
+                                        dialogBox = true
+                                    }) {
+                                        Icon(Icons.Default.Delete, contentDescription = null)
                                     }
                                 }
                             }
