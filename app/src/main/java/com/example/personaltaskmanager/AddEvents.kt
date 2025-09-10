@@ -55,7 +55,7 @@ import kotlin.toString
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit) {
+fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit,onBackCLick:()-> Unit) {
     var eventName by remember { mutableStateOf("") }
     var eventLocation by remember { mutableStateOf("") }
     var date by remember { mutableStateOf("") }
@@ -196,7 +196,8 @@ fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit) {
                             time.substring(0, 2).toInt(), time.substring(3, 5).toInt()
                         )
 
-                        onBack()
+                        onBackCLick()
+                        Toast.makeText(context,"Added Successfully", Toast.LENGTH_LONG).show()
                     } else {
                         showDialog = true
                     }

@@ -41,7 +41,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddTask(onBack: () -> Unit, viewModel: TaskViewModel = viewModel()) {
+fun AddTask(onBack: () -> Unit,onBackClick:()->Unit, viewModel: TaskViewModel = viewModel()) {
     var name by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -164,7 +164,8 @@ fun AddTask(onBack: () -> Unit, viewModel: TaskViewModel = viewModel()) {
 
                                 if (networkInfo != null && networkInfo.isConnected) {
                                 viewModel.addTask(0, name, description, location, false)
-                                onBack()
+                                onBackClick()
+                                    Toast.makeText(context,"Added Successfully", Toast.LENGTH_SHORT).show()
                             }
                                 else {
 
