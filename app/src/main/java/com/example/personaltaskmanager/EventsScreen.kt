@@ -43,6 +43,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -50,6 +51,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.motionEventSpy
+import androidx.compose.ui.layout.TestModifierUpdaterLayout
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -70,7 +74,7 @@ fun EventsScreen(
         viewModel.loadEvents()
     }
     var dialogBox by remember { mutableStateOf(false) }
-
+    val context = LocalContext.current
     val coming by viewModel.comingEvent.collectAsState()
     val past by viewModel.pastEvent.collectAsState()
     val tabItems = listOf(
@@ -146,147 +150,202 @@ fun EventsScreen(
                 modifier = Modifier.fillMaxSize()
             ) { index ->
                 if (index == 0) {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(top = 15.dp, bottom = 15.dp),
-                        verticalArrangement = Arrangement.spacedBy(15.dp)
-                    ) {
-                        items(coming) { task ->
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                elevation = CardDefaults.cardElevation(6.dp),
-                                shape = RoundedCornerShape(12.dp)
+
+                    val cm = context.getSystemService(android.content.Context.CONNECTIVITY_SERVICE)
+                            as android.net.ConnectivityManager
+                    val networkInfo = cm.activeNetworkInfo
+                    if (networkInfo != null && networkInfo.isConnected) {
+
+
+                        if (coming.isEmpty()) {
+                            Text("\t Nothing to display yet.Add some Events!")
+                        } else {
+
+
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(top = 15.dp, bottom = 15.dp),
+                                verticalArrangement = Arrangement.spacedBy(15.dp)
                             ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(10.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text("Title: ${task.event_name}")
-                                        Text("Location: ${task.location}")
-                                        Text("Date: ${task.event_date}")
-                                        Text("Time: ${task.event_time}")
-                                    }
-                                    if (dialogBox) {
-                                        AlertDialog(
-                                            onDismissRequest = { dialogBox = false },
-                                            title = { Text("Are you want To delete this item? ") },
-
-                                            confirmButton = {
-                                                Button(onClick = {
-                                                    viewModel.deleteEvent(task.id)
-
-
-                                                    dialogBox = false
-
-                                                }) {
-                                                    Text("Confirm")
-                                                }
-                                            },
-
-                                            dismissButton = {
-                                                Button(onClick = { dialogBox = false }) {
-                                                    Text("Dismiss")
-                                                }
+                                items(coming) { task ->
+                                    Card(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        elevation = CardDefaults.cardElevation(6.dp),
+                                        shape = RoundedCornerShape(12.dp)
+                                    ) {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(10.dp),
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Column(modifier = Modifier.weight(1f)) {
+                                                Text("Title: ${task.event_name}")
+                                                Text("Location: ${task.location}")
+                                                Text("Date: ${task.event_date}")
+                                                Text("Time: ${task.event_time}")
                                             }
-                                        )
-                                    }
+                                            if (dialogBox) {
+                                                AlertDialog(
+                                                    onDismissRequest = { dialogBox = false },
+                                                    title = { Text("Are you want To delete this item? ") },
 
-                                    IconButton(onClick = {
+                                                    confirmButton = {
+                                                        Button(onClick = {
+                                                            viewModel.deleteEvent(task.id)
 
-                                        dialogBox = true
-                                    }) {
-                                        Icon(Icons.Default.Delete, contentDescription = null)
+
+                                                            dialogBox = false
+
+                                                        }) {
+                                                            Text("Confirm")
+                                                        }
+                                                    },
+
+                                                    dismissButton = {
+                                                        Button(onClick = { dialogBox = false }) {
+                                                            Text("Dismiss")
+                                                        }
+                                                    }
+                                                )
+                                            }
+
+                                            IconButton(onClick = {
+
+                                                dialogBox = true
+                                            }) {
+                                                Icon(
+                                                    Icons.Default.Delete,
+                                                    contentDescription = null
+                                                )
+                                            }
+                                        }
                                     }
                                 }
+
                             }
                         }
-
+                    } else {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                "No internet Available",
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
                     }
                 } else if (index == 1) {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(top = 15.dp, bottom = 15.dp),
-                        verticalArrangement = Arrangement.spacedBy(15.dp)
-                    ) {
-                        items(past) { tasks ->
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                elevation = CardDefaults.cardElevation(6.dp),
-                                shape = RoundedCornerShape(12.dp)
+                    val cm = context.getSystemService(android.content.Context.CONNECTIVITY_SERVICE)
+                            as android.net.ConnectivityManager
+                    val networkInfo = cm.activeNetworkInfo
+                    if (networkInfo != null && networkInfo.isConnected) {
+
+
+                        if (past.isEmpty()) {
+                            Text("\t Nothing to display yet.Add some Events!")
+                        } else {
+
+
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(top = 15.dp, bottom = 15.dp),
+                                verticalArrangement = Arrangement.spacedBy(15.dp)
                             ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(10.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text("Title: ${tasks.event_name}")
-                                        Text("Location: ${tasks.location}")
-                                        Text("Date: ${tasks.event_date}")
-                                        Text("Time: ${tasks.event_time}")
-                                    }
-                                    if (dialogBox) {
-                                        AlertDialog(
-                                            onDismissRequest = { dialogBox = false },
-                                            title = { Text("Are you want To delete this item? ") },
-
-                                            confirmButton = {
-                                                Button(onClick = {
-                                                    viewModel.deleteEvent(tasks.id)
-
-
-                                                    dialogBox = false
-
-                                                }) {
-                                                    Text("Confirm")
-                                                }
-                                            },
-
-                                            dismissButton = {
-                                                Button(onClick = { dialogBox = false }) {
-                                                    Text("Dismiss")
-                                                }
+                                items(past) { tasks ->
+                                    Card(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        elevation = CardDefaults.cardElevation(6.dp),
+                                        shape = RoundedCornerShape(12.dp)
+                                    ) {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(10.dp),
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Column(modifier = Modifier.weight(1f)) {
+                                                Text("Title: ${tasks.event_name}")
+                                                Text("Location: ${tasks.location}")
+                                                Text("Date: ${tasks.event_date}")
+                                                Text("Time: ${tasks.event_time}")
                                             }
-                                        )
+                                            if (dialogBox) {
+                                                AlertDialog(
+                                                    onDismissRequest = { dialogBox = false },
+                                                    title = { Text("Are you want To delete this item? ") },
+
+                                                    confirmButton = {
+                                                        Button(onClick = {
+                                                            viewModel.deleteEvent(tasks.id)
+
+
+                                                            dialogBox = false
+
+                                                        }) {
+                                                            Text("Confirm")
+                                                        }
+                                                    },
+
+                                                    dismissButton = {
+                                                        Button(onClick = { dialogBox = false }) {
+                                                            Text("Dismiss")
+                                                        }
+                                                    }
+                                                )
+                                            }
+
+                                            IconButton(onClick = {
+
+                                                dialogBox = true
+                                            }) {
+                                                Icon(
+                                                    Icons.Default.Delete,
+                                                    contentDescription = null
+                                                )
+                                            }
+                                        }
                                     }
 
-                                    IconButton(onClick = {
-
-                                        dialogBox = true
-                                    }) {
-                                        Icon(Icons.Default.Delete, contentDescription = null)
-                                    }
                                 }
                             }
-
+                        }
+                    } else {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                "No internet Available",
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Medium
+                            )
                         }
                     }
-                }
 
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = tabItems[index].title)
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = tabItems[index].title)
+                    }
                 }
             }
         }
-    }
 
-    Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier.fillMaxSize()) {
-        FloatingActionButton(
-            modifier = Modifier.padding(20.dp),
-            contentColor = Color.White,
-            containerColor = colorResource(id = R.color.teal_700),
-            onClick = {
-                navController.navigate("AddEvents")
+        Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier.fillMaxSize()) {
+            FloatingActionButton(
+                modifier = Modifier.padding(20.dp),
+                contentColor = Color.White,
+                containerColor = colorResource(id = R.color.teal_700),
+                onClick = {
+                    navController.navigate("AddEvents")
+                }
+            ) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = null)
             }
-        ) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = null)
         }
     }
 }

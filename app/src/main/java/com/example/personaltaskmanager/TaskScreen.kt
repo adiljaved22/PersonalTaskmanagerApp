@@ -21,15 +21,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
@@ -41,13 +46,17 @@ fun TaskScreen(
     onBack: () -> Unit,
     navController: NavController,
     viewModel: TaskViewModel = viewModel()
+
+
 ) {
     LaunchedEffect(Unit) {
         viewModel.loadTasks()
     }
+
     var dialogBox by remember { mutableStateOf(false) }
     val pending by viewModel.pendingTask.collectAsState()
     val completed by viewModel.completedTasks.collectAsState()
+
     val tabItems = listOf(
         TabItem(
             title = "Pending Tasks",
@@ -71,18 +80,18 @@ fun TaskScreen(
                     titleContentColor = Color.White,
                     containerColor = colorResource(id = R.color.teal_700)
                 ),
-                    title = { Text("Task") },
-                    actions = {
-                        IconButton(onClick = { onBack() }) {
-                            Icon(
-                                imageVector = Icons.Filled.Home,
-                                contentDescription = "Home",
-                                tint = Color.White
-                            )
-                        }
-                    },
+                title = { Text("Task") },
+                actions = {
+                    IconButton(onClick = { onBack() }) {
+                        Icon(
+                            imageVector = Icons.Filled.Home,
+                            contentDescription = "Home",
+                            tint = Color.White
+                        )
+                    }
+                },
 
-                    )
+                )
 
         },
         floatingActionButton = {
@@ -130,136 +139,178 @@ fun TaskScreen(
                 modifier = Modifier.weight(1f)
             ) { index ->
                 if (index == 0) {
-                    // Pending Tasks
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(top = 15.dp, bottom = 15.dp),
-                        verticalArrangement = Arrangement.spacedBy(15.dp)
-                    ) {
-                        items(pending) { task ->
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                elevation = CardDefaults.cardElevation(6.dp),
-                                shape = RoundedCornerShape(12.dp)
+                    val context = LocalContext.current
+                    val cm = context.getSystemService(android.content.Context.CONNECTIVITY_SERVICE)
+                            as android.net.ConnectivityManager
+                    val networkInfo = cm.activeNetworkInfo
+                    if (networkInfo != null && networkInfo.isConnected) {
+
+
+                        if (pending.isEmpty()) {
+                            Text("\t Nothing to display yet.Add some Tasks!")
+                        } else {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(top = 15.dp, bottom = 15.dp),
+                                verticalArrangement = Arrangement.spacedBy(15.dp)
                             ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(10.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text("Title: ${task.title}")
-                                        Text("Description: ${task.description}")
-                                        Text("Location: ${task.location}")
-                                    }
-                                    IconButton(onClick = { viewModel.updateTask(task.id) }) {
-                                        Icon(
-                                            imageVector = Icons.Rounded.DoneOutline,
-                                            contentDescription = null
-                                        )
-                                    }
-                                    if (dialogBox) {
-                                        AlertDialog(
-                                            onDismissRequest = { dialogBox = false },
-                                            title = { Text("Are you want To delete this item? ") },
-
-                                            confirmButton = {
-                                                Button(onClick = {
-                                                    viewModel.delete(task.id)
-
-
-                                                    dialogBox = false
-
-                                                }) {
-                                                    Text("Confirm")
-                                                }
-                                            },
-
-                                            dismissButton = {
-                                                Button(onClick = { dialogBox = false }) {
-                                                    Text("Dismiss")
-                                                }
+                                items(pending) { task ->
+                                    Card(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        elevation = CardDefaults.cardElevation(6.dp),
+                                        shape = RoundedCornerShape(12.dp)
+                                    ) {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(10.dp),
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Column(modifier = Modifier.weight(1f)) {
+                                                Text("Title: ${task.title}")
+                                                Text("Description: ${task.description}")
+                                                Text("Location: ${task.location}")
                                             }
-                                        )
+                                            IconButton(onClick = { viewModel.updateTask(task.id) }) {
+                                                Icon(
+                                                    imageVector = Icons.Rounded.DoneOutline,
+                                                    contentDescription = null
+                                                )
+                                            }
+                                            if (dialogBox) {
+                                                AlertDialog(
+                                                    onDismissRequest = { dialogBox = false },
+                                                    title = { Text("Are you want To delete this item? ") },
+
+                                                    confirmButton = {
+                                                        Button(onClick = {
+                                                            viewModel.delete(task.id)
+
+
+                                                            dialogBox = false
+
+                                                        }) {
+                                                            Text("Confirm")
+                                                        }
+                                                    },
+
+                                                    dismissButton = {
+                                                        Button(onClick = { dialogBox = false }) {
+                                                            Text("Dismiss")
+                                                        }
+                                                    }
+                                                )
+                                            }
+
+                                            IconButton(onClick = {
+
+                                                dialogBox = true
+                                            }) {
+                                                Icon(
+                                                    Icons.Default.Delete,
+                                                    contentDescription = null
+                                                )
+                                            }
+
+                                        }
                                     }
-
-                                    IconButton(onClick = {
-
-                                        dialogBox = true
-                                    }) {
-                                        Icon(Icons.Default.Delete, contentDescription = null)
-                                    }
-                                    /* IconButton(onClick = { viewModel.delete(task.id) }) {
-                                         Icon(
-                                             imageVector = Icons.Filled.Delete,
-                                             contentDescription = null
-                                         )
-                                     }*/
-
-
                                 }
                             }
                         }
+                    } else {
+
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                "No internet Available",
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
                     }
+
                 } else if (index == 1) {
-
-                    // Completed Tasks
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(top = 15.dp, bottom = 15.dp),
-                        verticalArrangement = Arrangement.spacedBy(15.dp)
-                    ) {
-                        items(completed) { tasks ->
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                elevation = CardDefaults.cardElevation(6.dp),
-                                shape = RoundedCornerShape(12.dp)
+                    val context = LocalContext.current
+                    val cm = context.getSystemService(android.content.Context.CONNECTIVITY_SERVICE)
+                            as android.net.ConnectivityManager
+                    val networkInfo = cm.activeNetworkInfo
+                    if (networkInfo != null && networkInfo.isConnected) {
+                        if (completed.isEmpty()) {
+                            Text("\t Nothing to display yet.Add some Tasks!")
+                        } else {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(top = 15.dp, bottom = 15.dp),
+                                verticalArrangement = Arrangement.spacedBy(15.dp)
                             ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(10.dp),
-                                    horizontalArrangement = Arrangement.SpaceEvenly
-                                ) {
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text("Title: ${tasks.title}")
-                                        Text("Description: ${tasks.description}")
-                                        Text("Location: ${tasks.location}")
-                                    }
-                                    if (dialogBox) {
-                                        AlertDialog(
-                                            onDismissRequest = { dialogBox = false },
-                                            title = { Text("Are you want To delete this item? ") },
-
-                                            confirmButton = {
-                                                Button(onClick = {
-                                                    viewModel.delete(tasks.id)
-
-
-                                                    dialogBox = false
-
-                                                }) {
-                                                    Text("Confirm")
-                                                }
-                                            },
-
-                                            dismissButton = {
-                                                Button(onClick = { dialogBox = false }) {
-                                                    Text("Dismiss")
-                                                }
+                                items(completed) { tasks ->
+                                    Card(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        elevation = CardDefaults.cardElevation(6.dp),
+                                        shape = RoundedCornerShape(12.dp)
+                                    ) {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(10.dp),
+                                            horizontalArrangement = Arrangement.SpaceEvenly
+                                        ) {
+                                            Column(modifier = Modifier.weight(1f)) {
+                                                Text("Title: ${tasks.title}")
+                                                Text("Description: ${tasks.description}")
+                                                Text("Location: ${tasks.location}")
                                             }
-                                        )
-                                    }
+                                            if (dialogBox) {
+                                                AlertDialog(
+                                                    onDismissRequest = { dialogBox = false },
+                                                    title = { Text("Are you want To delete this item? ") },
 
-                                    IconButton(onClick = {
+                                                    confirmButton = {
+                                                        Button(onClick = {
+                                                            viewModel.delete(tasks.id)
 
-                                        dialogBox = true
-                                    }) {
-                                        Icon(Icons.Default.Delete, contentDescription = null)
+
+                                                            dialogBox = false
+
+                                                        }) {
+                                                            Text("Confirm")
+                                                        }
+                                                    },
+
+                                                    dismissButton = {
+                                                        Button(onClick = { dialogBox = false }) {
+                                                            Text("Dismiss")
+                                                        }
+                                                    }
+                                                )
+                                            }
+
+                                            IconButton(onClick = {
+
+                                                dialogBox = true
+                                            }) {
+                                                Icon(
+                                                    Icons.Default.Delete,
+                                                    contentDescription = null
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }
+                        }
+                    } else {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                "No internet Available",
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Medium
+                            )
                         }
                     }
                 }

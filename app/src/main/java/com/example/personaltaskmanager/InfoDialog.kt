@@ -35,8 +35,10 @@ fun InfoDialog(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFFD32F2F),
-                        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+                    .background(
+                        Color(0xFFD32F2F),
+                        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+                    )
                     .padding(53.dp)
                     .align(Alignment.BottomCenter),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -53,7 +55,7 @@ fun InfoDialog(
 
 
                 Text(
-                    text = title ,
+                    text = title,
                     color = Color.White,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
@@ -64,7 +66,7 @@ fun InfoDialog(
 
 
                 Text(
-                    text = desc ,
+                    text = desc,
                     color = Color.White,
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center

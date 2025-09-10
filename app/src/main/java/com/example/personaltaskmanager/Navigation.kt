@@ -1,6 +1,7 @@
 package com.example.personaltaskmanager
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.window.Popup
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -18,22 +19,59 @@ fun Navigation() {
         }
         composable("Task")
         {
-            TaskScreen(navController = navController, onBack = { navController.navigate("Home") })
+            TaskScreen(
+                navController = navController,
+                onBack = {
+                    navController.popBackStack()
+                    /*  {
+                          popUpTo(0)
+                          {
+                              inclusive = false
+                          }
+                          launchSingleTop = true
+                      }*/
+
+                })
         }
         composable("Events")
         {
-            EventsScreen(navController = navController, onBack = { navController.navigate("Home") })
+            EventsScreen(navController = navController, onBack = {
+                navController.popBackStack()
+
+
+            })
         }
         composable("AddTask")
         {
             AddTask(
-                onBack = { navController.navigate("Home") },
+                onBack = {
+                    navController.navigate("Home")
+                    {
+                        popUpTo(0)
+                        {
+                            inclusive = false
+                        }
+                        launchSingleTop = true
+                    }
+                },
                 onBackClick = { navController.popBackStack() })
         }
         composable("AddEvents") {
             AddEvents(
-                onBack = { navController.navigate("Home") },
-                onBackCLick = { navController.popBackStack() })
+                onBack = {
+                    navController.navigate("Home")
+
+                    {
+                        popUpTo(0)
+                        {
+                            inclusive = false
+                        }
+                        launchSingleTop = true
+                    }
+
+                },
+                onBackCLick = { navController.popBackStack() }
+            )
         }
 
     }
