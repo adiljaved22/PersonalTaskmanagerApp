@@ -1,6 +1,6 @@
 package com.example.personaltaskmanager
 
-import android.util.Log
+
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,118 +48,139 @@ fun AddTask(onBack: () -> Unit, viewModel: TaskViewModel = viewModel()) {
     var nameError by remember { mutableStateOf("") }
     var locationError by remember { mutableStateOf("") }
     var descriptionError by remember { mutableStateOf("") }
+    var showDialog by remember { mutableStateOf(false) }
+
     val context = LocalContext.current
 
+    if (showDialog) {
+        InfoDialog(
+            title = "Whoops!",
+            desc = "No internet\n Check you internet and try again",
+            onDismiss = { showDialog = false }
+        )
+    } else {
+        Scaffold(
+            topBar =
+                {
+                    TopAppBar(
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            titleContentColor = Color.White,
+                            containerColor = colorResource(id = R.color.teal_700),
+                        ),
 
-    Scaffold(
-        topBar =
-            {
-                TopAppBar(
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        titleContentColor = Color.White,
-                        containerColor = colorResource(id = R.color.teal_700),
-                    ),
+                        title = { Text("Add Task") },
 
-                    title = { Text("Add Task") },
-
-                    actions = {
-                        IconButton(onClick = { onBack() }) {
-                            Icon(
-                                imageVector = Icons.Filled.Home,
-                                contentDescription = null,
-                                tint = Color.White
-                            )
+                        actions = {
+                            IconButton(onClick = { onBack() }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Home,
+                                    contentDescription = null,
+                                    tint = Color.White
+                                )
+                            }
                         }
-                    }
-                )
-            },
+                    )
+                },
 
-        ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-
-            ) {
-
-
-            Spacer(modifier = Modifier.height(20.dp))
+            ) { paddingValues ->
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            )
-            {
-                TextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 10.dp, end = 10.dp),
-                    value = name,
-                    singleLine = true,
-                    onValueChange = { name = it },
-                    label = {
-                        Text(
-                            text = nameError.ifEmpty { "Name" },
-                            color = if (nameError.isNotEmpty()) Red else Unspecified
-                        )
-                    })
-                Spacer(modifier = Modifier.height(10.dp))
-                TextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 10.dp, end = 10.dp),
-                    value = description,
-                    singleLine = true,
-                    onValueChange = { description = it },
-                    label = {
-                        Text(
-                            text = descriptionError.ifEmpty { "description" },
-                            color = if (descriptionError.isNotEmpty()) Red else Unspecified
-                        )
-                    })
-                Spacer(modifier = Modifier.height(10.dp))
+                verticalArrangement = Arrangement.Center,
 
-                TextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 10.dp, end = 10.dp),
-                    value = location,
-                    singleLine = true,
-                    onValueChange = { location = it },
-                    label = {
-                        Text(
-                            text = locationError.ifEmpty { "location" },
-                            color = if (locationError.isNotEmpty()) Red else Unspecified
-                        )
-                    })
-                Spacer(modifier = Modifier.height(10.dp))
-                Button(onClick = {
-                    nameError = when {
-                        name.isBlank() -> " Enter Name"
-                        else -> ""
-                    }
-                    descriptionError = when {
-                        description.isBlank() -> "Enter Description"
-                        else -> ""
-                    }
-                    locationError = when {
-                        location.isBlank() -> "Enter Location"
-                        else -> ""
-                    }
-                    if (name.isNotEmpty() && description.isNotEmpty() && location.isNotEmpty()) {
-                        viewModel.addTask(0, name, description, location, false)
-                        onBack()
-                    } else {
-                        Toast.makeText(context, "Fill All the Fields", Toast.LENGTH_SHORT)
-                            .show()
-                    }
+                ) {
 
-                }) {
-                    Text("Add")
+
+                Spacer(modifier = Modifier.height(20.dp))
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                )
+                {
+                    TextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 10.dp, end = 10.dp),
+                        value = name,
+                        singleLine = true,
+                        onValueChange = { name = it },
+                        label = {
+                            Text(
+                                text = nameError.ifEmpty { "Name" },
+                                color = if (nameError.isNotEmpty()) Red else Unspecified
+                            )
+                        })
+                    Spacer(modifier = Modifier.height(10.dp))
+                    TextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 10.dp, end = 10.dp),
+                        value = description,
+                        singleLine = true,
+                        onValueChange = { description = it },
+                        label = {
+                            Text(
+                                text = descriptionError.ifEmpty { "description" },
+                                color = if (descriptionError.isNotEmpty()) Red else Unspecified
+                            )
+                        })
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    TextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 10.dp, end = 10.dp),
+                        value = location,
+                        singleLine = true,
+                        onValueChange = { location = it },
+                        label = {
+                            Text(
+                                text = locationError.ifEmpty { "location" },
+                                color = if (locationError.isNotEmpty()) Red else Unspecified
+                            )
+                        })
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Button(onClick = {
+                        nameError = when {
+                            name.isBlank() -> " Enter Name"
+                            else -> ""
+                        }
+                        descriptionError = when {
+                            description.isBlank() -> "Enter Description"
+                            else -> ""
+                        }
+                        locationError = when {
+                            location.isBlank() -> "Enter Location"
+                            else -> ""
+                        }
+                        if (name.isNotEmpty() && description.isNotEmpty() && location.isNotEmpty()) {
+
+                                val cm = context.getSystemService(android.content.Context.CONNECTIVITY_SERVICE)
+                                        as android.net.ConnectivityManager
+                                val networkInfo = cm.activeNetworkInfo
+
+                                if (networkInfo != null && networkInfo.isConnected) {
+                                viewModel.addTask(0, name, description, location, false)
+                                onBack()
+                            }
+                                else {
+
+                                    showDialog = true
+                                }
+                        } else {
+                            Toast.makeText(context, "Fill All the Fields", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+
+                    }) {
+                        Text("Add")
+                    }
                 }
             }
+
         }
 
     }
