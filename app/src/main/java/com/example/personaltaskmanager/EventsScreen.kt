@@ -203,12 +203,6 @@ fun EventsScreen(
                                 }
                             }
                         }
-                        /* IconButton(onClick = { viewModel.deleteEvent(task.id) }) {
-                             Icon(
-                                 imageVector = Icons.Default.Delete,
-                                 contentDescription = null
-                             )
-                         }*/
 
                     }
                 } else if (index == 1) {

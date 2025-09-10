@@ -48,7 +48,7 @@ fun HomeScreen(
             Column(
                 modifier = Modifier
                     .size(120.dp)
-                    .background(Color(0xFFE53935), shape = RoundedCornerShape(25.dp))
+                    .background(Color.Red, shape = RoundedCornerShape(25.dp))
                     .clickable { NavigateToTask() }
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,

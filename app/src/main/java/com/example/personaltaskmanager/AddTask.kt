@@ -54,7 +54,7 @@ fun AddTask(onBack: () -> Unit, viewModel: TaskViewModel = viewModel()) {
 
     if (showDialog) {
         InfoDialog(
-            title = "Whoops!",
+            title = "Ahhh!!!",
             desc = "No internet\n Check you internet and try again",
             onDismiss = { showDialog = false }
         )

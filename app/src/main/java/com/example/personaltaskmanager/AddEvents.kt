@@ -1,6 +1,8 @@
 package com.example.personaltaskmanager
 
 import android.app.TimePickerDialog
+import android.content.Context
+import android.net.ConnectivityManager
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -60,170 +62,188 @@ fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit) {
     var time by remember { mutableStateOf("") }
     var nameError by remember { mutableStateOf("") }
     var locationError by remember { mutableStateOf("") }
-
     val context = LocalContext.current
     var dateError by remember { mutableStateOf("") }
     var timeError by remember { mutableStateOf("") }
     val state = rememberDatePickerState()
     var openDialogBox by remember { mutableStateOf(false) }
     var openTimeDialog by remember { mutableStateOf(false) }
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    titleContentColor = Color.White,
-                    containerColor = colorResource(id = R.color.teal_700),
-                ),
-                title = { Text("Add Events") },
-                actions = {
-                    IconButton(onClick = { onBack() }) {
-                        Icon(imageVector = Icons.Filled.Home, contentDescription = null, tint = Color.White)
-                    }
-                },
+    var showDialog by remember { mutableStateOf(false) }
+    if (showDialog) {
+        InfoDialog(
+            title = "Ahhh!!!",
+            desc = "No internet\n Check you internet and try again",
+            onDismiss = { showDialog = false }
+        )
+    } else {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        titleContentColor = Color.White,
+                        containerColor = colorResource(id = R.color.teal_700),
+                    ),
+                    title = { Text("Add Events") },
+                    actions = {
+                        IconButton(onClick = { onBack() }) {
+                            Icon(
+                                imageVector = Icons.Filled.Home,
+                                contentDescription = null,
+                                tint = Color.White
+                            )
+                        }
+                    },
                 )
 
 
-        }) { paddingValues ->
+            }) { paddingValues ->
+            Column(
+                modifier = Modifier.padding(paddingValues),
+
+                )
+
+            {
+
+            }
+        }
         Column(
-            modifier = Modifier.padding(paddingValues),
+
+            modifier = Modifier.fillMaxWidth(1f),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            TextField(
+                modifier = Modifier.fillMaxWidth(0.9f),
+                value = eventName,
+                singleLine = true,
+                onValueChange = { eventName = it },
+                label = {
+                    Text(
+
+                        text = nameError.ifEmpty { "Name" },
+                        color = if (nameError.isNotEmpty()) Red else Unspecified
+
+                    )
+                })
+            Spacer(modifier = Modifier.height(15.dp))
+            TextField(
+                modifier = Modifier.fillMaxWidth(0.9f),
+                value = eventLocation,
+                singleLine = true,
+                onValueChange = { eventLocation = it },
+                label = {
+                    Text(
+                        text = locationError.ifEmpty { "Location" },
+                        color = if (locationError.isNotEmpty()) Red else Unspecified
+                    )
+                })
+            Spacer(modifier = Modifier.height(15.dp))
+            TextField(
+                value = date,
+                singleLine = true,
+                onValueChange = { date = it },
+                label = {
+                    Text(
+                        text = dateError.ifEmpty { "Date" },
+                        color = if (dateError.isNotEmpty()) Red else Unspecified
+                    )
+                },
+                enabled = false,
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .clickable { openDialogBox = true })
+            Spacer(modifier = Modifier.height(15.dp))
+            TextField(
+                value = time,
+                singleLine = true,
+                onValueChange = { time = it },
+                label = {
+                    Text(
+                        text = timeError.ifEmpty { "Time" },
+                        color = if (timeError.isNotEmpty()) Red else Unspecified
+                    )
+                },
+                enabled = false,
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .clickable { openTimeDialog = true })
+            Spacer(modifier = Modifier.height(15.dp))
+
+            Button(onClick = {
+                nameError = when {
+                    eventName.isBlank() -> " Enter Name"
+                    else -> ""
+                }
+                locationError = when {
+                    eventLocation.isBlank() -> "Enter Location"
+                    else -> ""
+                }
+                dateError = when {
+                    date.isBlank() -> "Enter Date"
+                    else -> ""
+                }
+                timeError = when {
+                    time.isBlank() -> "Enter Time"
+                    else -> ""
+                }
+                if (eventName.isNotEmpty() && eventLocation.isNotEmpty() && date.isNotEmpty() && time.isNotEmpty()) {
+                    val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE)
+                            as ConnectivityManager
+                    val networkInfo = cm.activeNetworkInfo
+                    if (networkInfo != null && networkInfo.isConnected) {
+                        viewModel.addEvent(
+                            0, eventName, eventLocation, date,
+                            time.substring(0, 2).toInt(), time.substring(3, 5).toInt()
+                        )
+
+                        onBack()
+                    } else {
+                        showDialog = true
+                    }
+                } else {
+                    Toast.makeText(context, "Fill All the Fields", Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+
+            }
 
             )
+            {
 
-        {
+                Text("Add")
+
+            }
 
         }
-    }
-    Column(
+        if (openDialogBox) {
+            DatePickerDialog(onDismissRequest = { openDialogBox = false }, confirmButton = {
+                TextButton(onClick = {
+                    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    date = sdf.format(Date(state.selectedDateMillis ?: 0L))
 
-        modifier = Modifier.fillMaxWidth(1f),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        TextField(
-            modifier = Modifier.fillMaxWidth(0.9f),
-            value = eventName,
-            singleLine = true,
-            onValueChange = { eventName = it },
-            label = {
-                Text(
+                    openDialogBox = false
+                }) {
+                    Text("OK")
+                }
 
-                    text = nameError.ifEmpty { "Name" },
-                    color = if (nameError.isNotEmpty()) Red else Unspecified
-
-                )
-            })
-        Spacer(modifier = Modifier.height(15.dp))
-        TextField(
-            modifier = Modifier.fillMaxWidth(0.9f),
-            value = eventLocation,
-            singleLine = true,
-            onValueChange = { eventLocation = it },
-            label = {
-                Text(
-                    text = locationError.ifEmpty { "Location" },
-                    color = if (locationError.isNotEmpty()) Red else Unspecified
-                )
-            })
-        Spacer(modifier = Modifier.height(15.dp))
-        TextField(
-            value = date,
-            singleLine = true,
-            onValueChange = { date = it },
-            label = {
-                Text(
-                    text = dateError.ifEmpty { "Date" },
-                    color = if (dateError.isNotEmpty()) Red else Unspecified
-                )
-            },
-            enabled = false,
-            modifier = Modifier
-                .fillMaxWidth(0.9f)
-                .clickable { openDialogBox = true })
-        Spacer(modifier = Modifier.height(15.dp))
-        TextField(
-            value = time,
-            singleLine = true,
-            onValueChange = { time = it },
-            label = {
-                Text(
-                    text = timeError.ifEmpty { "Time" },
-                    color = if (timeError.isNotEmpty()) Red else Unspecified
-                )
-            },
-            enabled = false,
-            modifier = Modifier
-                .fillMaxWidth(0.9f)
-                .clickable { openTimeDialog = true })
-        Spacer(modifier = Modifier.height(15.dp))
-
-        Button(onClick = {
-            nameError = when {
-                eventName.isBlank() -> " Enter Name"
-                else -> ""
-            }
-            locationError = when {
-                eventLocation.isBlank() -> "Enter Location"
-                else -> ""
-            }
-            dateError = when {
-                date.isBlank() -> "Enter Date"
-                else -> ""
-            }
-            timeError = when {
-                time.isBlank() -> "Enter Time"
-                else -> ""
-            }
-            if (eventName.isNotEmpty() && eventLocation.isNotEmpty() && date.isNotEmpty() && time.isNotEmpty()) {
-                viewModel.addEvent(
-                    0, eventName, eventLocation, date,
-                    time.substring(0, 2).toInt(), time.substring(3, 5).toInt()
-                )
-                onBack()
-            } else {
-                Toast.makeText(context, "Fill All the Fields", Toast.LENGTH_SHORT)
-                    .show()
-            }
-
-
-        }
-
-        )
-        {
-
-            Text("Add")
-
-        }
-
-    }
-    if (openDialogBox) {
-        DatePickerDialog(onDismissRequest = { openDialogBox = false }, confirmButton = {
-            TextButton(onClick = {
-                val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                date = sdf.format(Date(state.selectedDateMillis ?: 0L))
-
-                openDialogBox = false
+            }, dismissButton = {
+                TextButton(onClick = { openDialogBox = false }) {
+                    Text("Cancel")
+                }
             }) {
-                Text("OK")
+                DatePicker(state = state)
             }
-
-        }, dismissButton = {
-            TextButton(onClick = { openDialogBox = false }) {
-                Text("Cancel")
-            }
-        }) {
-            DatePicker(state = state)
+        }
+        val calendar = Calendar.getInstance()
+        if (openTimeDialog) {
+            TimePickerDialog(
+                LocalContext.current, { _, hour: Int, minute: Int ->
+                    time = String.format("%02d:%02d:00", hour, minute)
+                    openTimeDialog = false
+                }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true
+            ).show()
         }
     }
-    val calendar = Calendar.getInstance()
-    if (openTimeDialog) {
-        TimePickerDialog(
-            LocalContext.current, { _, hour: Int, minute: Int ->
-                time = String.format("%02d:%02d:00", hour, minute)
-                openTimeDialog = false
-            }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true
-        ).show()
-    }
-
 
 }

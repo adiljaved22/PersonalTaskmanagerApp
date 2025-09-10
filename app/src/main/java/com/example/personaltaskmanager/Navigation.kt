@@ -18,18 +18,18 @@ fun Navigation() {
         }
         composable("Task")
         {
-            TaskScreen(navController = navController, onBack = { navController.popBackStack() })
+            TaskScreen(navController = navController, onBack = { navController.navigate("Home") })
         }
         composable("Events")
         {
-            EventsScreen(navController = navController, onBack = { navController.popBackStack() })
+            EventsScreen(navController = navController, onBack = { navController.navigate("Home")})
         }
         composable("AddTask")
         {
-            AddTask(onBack = { navController.popBackStack() })
+            AddTask(onBack = { navController.navigate("Home")})
         }
         composable("AddEvents"){
-            AddEvents(onBack = {navController.popBackStack()})
+            AddEvents(onBack = {navController.navigate("Home")})
         }
 
     }
