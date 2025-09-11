@@ -2,13 +2,17 @@ package com.example.personaltaskmanager
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.window.Popup
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 
 @Composable
-fun Navigation() {
+fun Navigation(viewModel: TaskViewModel = viewModel()) {
     val navController = rememberNavController()
+
     NavHost(navController = navController, startDestination = "Home") {
         composable("Home") {
             HomeScreen(
@@ -22,24 +26,29 @@ fun Navigation() {
             TaskScreen(
                 navController = navController,
                 onBack = {
-                    navController.popBackStack()
-                    /*  {
-                          popUpTo(0)
-                          {
-                              inclusive = false
-                          }
-                          launchSingleTop = true
-                      }*/
-
-                })
+                    navController.popBackStack() })
         }
         composable("Events")
         {
-            EventsScreen(navController = navController, onBack = {
-                navController.popBackStack()
+            EventsScreen(
+                navController = navController, onBack = {
+                    navController.popBackStack()
+                },
+            )
+        }
+        composable(
+            "Edit/{taskId}",
+            arguments = listOf(navArgument("taskId") { type = NavType.IntType })
+        ) { entry ->
+            val taskId = entry.arguments!!.getInt("taskId")
+            val event = viewModel.getEventById(taskId)
+            event?.let {
+                Edit(
+                    EventsToBeEdit = it,
+                    onBack = { navController.popBackStack() },
 
-
-            })
+                )
+            }
         }
         composable("AddTask")
         {

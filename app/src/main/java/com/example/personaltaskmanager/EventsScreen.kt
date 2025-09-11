@@ -25,6 +25,7 @@ import androidx.compose.material.icons.outlined.AddTask
 import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.EventAvailable
 import androidx.compose.material.icons.outlined.Pending
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -69,6 +70,7 @@ fun EventsScreen(
     onBack: () -> Unit,
     navController: NavController,
     viewModel: TaskViewModel = viewModel()
+
 ) {
     LaunchedEffect(Unit) {
         viewModel.loadEvents()
@@ -185,6 +187,15 @@ fun EventsScreen(
                                                 Text("Date: ${task.event_date}")
                                                 Text("Time: ${task.event_time}")
                                             }
+                                            IconButton(onClick = {
+                                                navController.navigate("Edit/${task.id}")
+                                            }) {
+                                                Icon(
+                                                    imageVector = Icons.Rounded.Edit,
+                                                    contentDescription = null
+                                                )
+                                            }
+
                                             if (dialogBox) {
                                                 AlertDialog(
                                                     onDismissRequest = { dialogBox = false },

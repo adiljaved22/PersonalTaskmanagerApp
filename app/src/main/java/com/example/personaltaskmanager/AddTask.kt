@@ -41,7 +41,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddTask(onBack: () -> Unit,onBackClick:()->Unit, viewModel: TaskViewModel = viewModel()) {
+fun AddTask(onBack: () -> Unit, onBackClick: () -> Unit, viewModel: TaskViewModel = viewModel()) {
     var name by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -119,14 +119,16 @@ fun AddTask(onBack: () -> Unit,onBackClick:()->Unit, viewModel: TaskViewModel = 
                             .fillMaxWidth()
                             .padding(start = 10.dp, end = 10.dp),
                         value = description,
-                        singleLine = true,
+                        singleLine =false,
                         onValueChange = { description = it },
                         label = {
                             Text(
                                 text = descriptionError.ifEmpty { "description" },
                                 color = if (descriptionError.isNotEmpty()) Red else Unspecified
                             )
-                        })
+                        },   minLines = 3,
+                        maxLines = 3,
+                    )
                     Spacer(modifier = Modifier.height(10.dp))
 
                     TextField(
@@ -158,19 +160,20 @@ fun AddTask(onBack: () -> Unit,onBackClick:()->Unit, viewModel: TaskViewModel = 
                         }
                         if (name.isNotEmpty() && description.isNotEmpty() && location.isNotEmpty()) {
 
-                                val cm = context.getSystemService(android.content.Context.CONNECTIVITY_SERVICE)
+                            val cm =
+                                context.getSystemService(android.content.Context.CONNECTIVITY_SERVICE)
                                         as android.net.ConnectivityManager
-                                val networkInfo = cm.activeNetworkInfo
+                            val networkInfo = cm.activeNetworkInfo
 
-                                if (networkInfo != null && networkInfo.isConnected) {
+                            if (networkInfo != null && networkInfo.isConnected) {
                                 viewModel.addTask(0, name, description, location, false)
                                 onBackClick()
-                                    Toast.makeText(context,"Added Successfully", Toast.LENGTH_SHORT).show()
-                            }
-                                else {
+                                Toast.makeText(context, "Added Successfully", Toast.LENGTH_SHORT)
+                                    .show()
+                            } else {
 
-                                    showDialog = true
-                                }
+                                showDialog = true
+                            }
                         } else {
                             Toast.makeText(context, "Fill All the Fields", Toast.LENGTH_SHORT)
                                 .show()

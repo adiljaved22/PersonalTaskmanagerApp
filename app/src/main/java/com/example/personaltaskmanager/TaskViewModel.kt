@@ -75,6 +75,10 @@ class TaskViewModel : ViewModel() {
         }
     }
 
+    fun getEventById(id: Int): Events? {
+        return _comingEvent.value.find { it.id == id } ?: _pastEvent.value.find { it.id == id }
+    }
+
     fun addTask(id: Int, title: String, description: String, location: String, comp: Boolean) {
         viewModelScope.launch {
             try {
@@ -129,7 +133,7 @@ class TaskViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 _completedTasks.value = _completedTasks.value.filter { it.id != taskId }
-                _pendingTasks.value=_pendingTasks.value.filter { it.id!=taskId }
+                _pendingTasks.value = _pendingTasks.value.filter { it.id != taskId }
                 Services.deleteTask(taskId)
                 loadTasks()
             } catch (e: Exception) {
@@ -146,6 +150,28 @@ class TaskViewModel : ViewModel() {
                 _comingEvent.value = _comingEvent.value.filter { it.id != eventId }
                 Services.delete(eventId)
                 loadEvents()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun update(
+
+        eventId: Int,
+        eventName: String,
+        eventLocation: String,
+        eventDate: String,
+        time: String
+    ) {
+
+        viewModelScope.launch {
+            try {
+
+
+               val response= Services.update(eventId, eventName, eventLocation, eventDate, time)
+                println("chabal,$response")
+loadEvents()
             } catch (e: Exception) {
                 e.printStackTrace()
             }

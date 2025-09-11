@@ -1,6 +1,5 @@
 package com.example.personaltaskmanager
 
-import okhttp3.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
@@ -8,6 +7,7 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 private val retrofit = Retrofit.Builder().baseUrl("http://192.168.0.181:8000/")
@@ -21,28 +21,40 @@ interface ApiServices {
     @GET("tasks/")
     suspend fun getTasks(): List<Task>
 
-    @PUT("tasks/update_task")
+    @PUT("tasks/update_task/{task_id}")
     suspend fun markAsDone(
-        @Query("task_id") id: Int,
+        @Path("task_id") id: Int,
         @Query("completed") completed: Boolean = true
     )
 
-    @DELETE("tasks/delete_task")
-    suspend fun deleteTask(@Query("task_id") id: Int)
+
+    @DELETE("tasks/delete_task/{task_id}")
+    suspend fun deleteTask(
+        @Path("task_id") id: Int
+    )
 
 
     @POST("events/create_event/")
 
     suspend fun createEvent(@Body request: Events): retrofit2.Response<Events>
-    /*        @Query("id") id :Int,
-            @Query("event_name") eventName: String,
-            @Query("location") eventLocation:String,
-            @Query("event_date") eventDate: String,
-            @Query("event_time") eventTime: String*/
 
     @GET("events/")
     suspend fun getEvents(): List<Events>
 
-    @DELETE("events/delete_event")
-    suspend fun delete(@Query("event_id") id: Int)
+    @DELETE("events/delete_event/{event_id}")
+    suspend fun delete(@Path("event_id") id: Int)
+
+    @PUT("events/update_event/{event_id}")
+    suspend fun update(
+        @Path("event_id") id: Int,
+        @Query("event_name") name: String,
+        @Query("location") location: String,
+        @Query("event_date") date: String,
+        @Query("event_time") time: String,
+
+        )
+
 }
+
+
+
