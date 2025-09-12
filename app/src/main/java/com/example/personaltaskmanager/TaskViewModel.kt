@@ -1,5 +1,6 @@
 package com.example.personaltaskmanager
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -162,16 +163,37 @@ class TaskViewModel : ViewModel() {
         eventName: String,
         eventLocation: String,
         eventDate: String,
-        time: String
+        hour: Int,
+        minute: Int
     ) {
 
         viewModelScope.launch {
             try {
+                val formattedTime = String.format("%02d:%02d:00", hour, minute) // HH:mm:ss
+                val response= Events(
+                    id =eventId,
+                    event_name = eventName,
+                    location = eventLocation,
+                    event_date = eventDate,
+                    event_time = formattedTime,
 
 
-               val response= Services.update(eventId, eventName, eventLocation, eventDate, time)
-                println("chabal,$response")
-loadEvents()
+                )
+                println("fuck")
+               val Response= Services.update(eventId,response)
+                    println("lol")
+                if (Response.isSuccessful){
+                println("Work")
+                    loadEvents()
+                    println("mouse")
+
+                }
+                else
+                {
+
+                }
+
+
             } catch (e: Exception) {
                 e.printStackTrace()
             }

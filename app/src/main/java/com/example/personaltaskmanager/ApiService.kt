@@ -47,12 +47,7 @@ interface ApiServices {
     @PUT("events/update_event/{event_id}")
     suspend fun update(
         @Path("event_id") id: Int,
-        @Query("event_name") name: String,
-        @Query("location") location: String,
-        @Query("event_date") date: String,
-        @Query("event_time") time: String,
-
-        )
+       @Body()request: Events):retrofit2.Response<Events>
 
 }
 

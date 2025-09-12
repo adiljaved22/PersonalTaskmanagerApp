@@ -47,7 +47,7 @@ fun Edit(
 
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = {
-            viewModel.update(EventsToBeEdit.id, name, location, date, time)
+            viewModel.update(EventsToBeEdit.id, name, location, date, 0,0)
             onBack()
         }) {
             Text("Update")
