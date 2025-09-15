@@ -3,23 +3,21 @@ package com.example.personaltaskmanager
 import android.app.TimePickerDialog
 import android.content.Context
 import android.net.ConnectivityManager
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,34 +26,35 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.Color.Companion.Unspecified
-import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import kotlin.toString
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit,onBackCLick:()-> Unit) {
+fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit, onBackCLick: () -> Unit) {
     var eventName by remember { mutableStateOf("") }
     var eventLocation by remember { mutableStateOf("") }
     var date by remember { mutableStateOf("") }
@@ -66,9 +65,9 @@ fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit,onBackC
     var dateError by remember { mutableStateOf("") }
     var timeError by remember { mutableStateOf("") }
     val state = rememberDatePickerState()
-    var openDialogBox by remember { mutableStateOf(false) }
-    var openTimeDialog by remember { mutableStateOf(false) }
-    var showDialog by remember { mutableStateOf(false) }
+    var openDialogBox by rememberSaveable { mutableStateOf(false) }
+    var openTimeDialog by  rememberSaveable { mutableStateOf(false) }
+    var showDialog by  rememberSaveable { mutableStateOf(false) }
     if (showDialog) {
         InfoDialog(
             title = "Ahhh!!!",
@@ -191,13 +190,21 @@ fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit,onBackC
                             as ConnectivityManager
                     val networkInfo = cm.activeNetworkInfo
                     if (networkInfo != null && networkInfo.isConnected) {
+                        val formatedDate = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                        val formatedTime = DateTimeFormatter.ofPattern("HH:mm:ss")
+                        /* val LocalDate = LocalDate.parse(date, formatedDate)
+                         val LocalTime = LocalTime.parse(time, formatedTime)*/
                         viewModel.addEvent(
-                            0, eventName, eventLocation, date,
-                            time.substring(0, 2).toInt(), time.substring(3, 5).toInt()
+                            0,
+                            eventName,
+                            eventLocation,
+                            date,
+                            time
+
                         )
 
                         onBackCLick()
-                        Toast.makeText(context,"Added Successfully", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, "Added Successfully", Toast.LENGTH_LONG).show()
                     } else {
                         showDialog = true
                     }

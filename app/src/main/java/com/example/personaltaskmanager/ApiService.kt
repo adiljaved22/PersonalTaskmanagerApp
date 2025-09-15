@@ -10,7 +10,7 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-private val retrofit = Retrofit.Builder().baseUrl("http://192.168.0.181:8000/")
+private val retrofit = Retrofit.Builder().baseUrl("http://192.168.0.106:8000/")
     .addConverterFactory(GsonConverterFactory.create()).build()
 val Services = retrofit.create(ApiServices::class.java)
 
@@ -47,9 +47,6 @@ interface ApiServices {
     @PUT("events/update_event/{event_id}")
     suspend fun update(
         @Path("event_id") id: Int,
-       @Body()request: Events):retrofit2.Response<Events>
+        @Body()request: Events):retrofit2.Response<Events>
 
 }
-
-
-

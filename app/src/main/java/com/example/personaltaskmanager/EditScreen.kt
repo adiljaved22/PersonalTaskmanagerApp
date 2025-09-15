@@ -44,10 +44,9 @@ fun Edit(
         OutlinedTextField(value = date, onValueChange = { date = it }, label = { Text("Date") })
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(value = time, onValueChange = { time = it }, label = { Text("Time") })
-
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = {
-            viewModel.update(EventsToBeEdit.id, name, location, date, 0,0)
+            viewModel.update(EventsToBeEdit.id, name, location, date, time)
             onBack()
         }) {
             Text("Update")

@@ -1,8 +1,8 @@
 package com.example.personaltaskmanager
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -24,12 +24,13 @@ class TaskViewModel : ViewModel() {
 
     private var _pastEvent = MutableStateFlow<List<Events>>(emptyList())
     val pastEvent: StateFlow<List<Events>> = _pastEvent
-    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
 
 
     init {
         loadTasks()
         loadEvents()
+        startAutoRefreshEvents()
     }
 
     fun loadTasks() {
@@ -47,27 +48,22 @@ class TaskViewModel : ViewModel() {
     fun loadEvents() {
         viewModelScope.launch {
             try {
+                val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                val currentDateTime=Date()
                 val events = Services.getEvents()
-                val currentDate = sdf.parse(sdf.format(Date()))
+
+
                 val coming = events.filter {
-                    val eventDate = sdf.parse(it.event_date)
-                    eventDate != null && !eventDate.before(currentDate)
+                    val dateTimeString="${it.event_date} ${it.event_time}"
+                    val eventDate = sdf.parse(dateTimeString)
+
+                    eventDate != null && !eventDate.before(currentDateTime)
                 }
                 val completed = events.filter {
-                    val eventDate = sdf.parse(it.event_date)
-                    eventDate != null && eventDate.before(currentDate)
+                    val dateTimeString = "${it.event_date} ${it.event_time}"
+                    val eventDate = sdf.parse(dateTimeString)
+                    eventDate != null && eventDate.before(currentDateTime)
                 }
-                _comingEvent.value = coming
-                _pastEvent.value = completed
-                /*val currentDate = sdf.parse(sdf.format(Date()))
-                val coming = events.filter {
-                    val eventDate = sdf.parse(it.event_date)
-                    eventDate != null && !eventDate.before(currentDate)
-                }
-                val completed = events.filter {
-                    val eventDate = sdf.parse(it.event_date)
-                    eventDate != null && eventDate.before(currentDate)
-                }*/
                 _comingEvent.value = coming
                 _pastEvent.value = completed
             } catch (e: Exception) {
@@ -75,7 +71,18 @@ class TaskViewModel : ViewModel() {
             }
         }
     }
-
+    private fun startAutoRefreshEvents() {
+        viewModelScope.launch {
+            while (true) {
+                try {
+                    loadEvents()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+                delay(2_000) // 30 sec = 30,000 ms
+            }
+        }
+    }
     fun getEventById(id: Int): Events? {
         return _comingEvent.value.find { it.id == id } ?: _pastEvent.value.find { it.id == id }
     }
@@ -94,17 +101,17 @@ class TaskViewModel : ViewModel() {
         }
     }
 
-    fun addEvent(idd: Int, name: String, location: String, date: String, hour: Int, minute: Int) {
+    fun addEvent(idd: Int, name: String, location: String, date: String, time:String) {
         viewModelScope.launch {
             try {
 
-                val formattedTime = String.format("%02d:%02d:00", hour, minute) // HH:mm:ss
+
                 val newevent = Events(
                     id = idd,
                     event_name = name,
                     location = location,
                     event_date = date,
-                    event_time = formattedTime, // ensure HH:mm:ss
+                    event_time =time, // ensure HH:mm:ss
 
 
                 )
@@ -163,33 +170,29 @@ class TaskViewModel : ViewModel() {
         eventName: String,
         eventLocation: String,
         eventDate: String,
-        hour: Int,
-        minute: Int
+        time: String
     ) {
 
         viewModelScope.launch {
             try {
-                val formattedTime = String.format("%02d:%02d:00", hour, minute) // HH:mm:ss
-                val response= Events(
-                    id =eventId,
+                val response = Events(
+                    id = eventId,
                     event_name = eventName,
                     location = eventLocation,
                     event_date = eventDate,
-                    event_time = formattedTime,
+                    event_time = time,
 
 
-                )
+                    )
                 println("fuck")
-               val Response= Services.update(eventId,response)
-                    println("lol")
-                if (Response.isSuccessful){
-                println("Work")
+                val Response = Services.update(eventId, response)
+                println("lol")
+                if (Response.isSuccessful) {
+                    println("Work")
                     loadEvents()
                     println("mouse")
 
-                }
-                else
-                {
+                } else {
 
                 }
 
@@ -200,8 +203,3 @@ class TaskViewModel : ViewModel() {
         }
     }
 }
-
-
-
-
-
