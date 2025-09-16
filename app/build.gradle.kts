@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    /*    id("com.android.application")*/
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -41,7 +43,16 @@ android {
 
 dependencies {
     val nav_version = "2.7.4"
+    implementation("com.google.firebase:firebase-firestore-ktx:24.4.0")
+// Jetpack Compose
+    implementation("androidx.compose.ui:ui:1.5.0")
+    implementation("androidx.compose.material:material:1.5.0")
+    implementation("androidx.compose.ui:ui-tooling:1.5.0")
+// Kotlin Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
     implementation("androidx.navigation:navigation-compose:${nav_version}")
+    implementation(platform("com.google.firebase:firebase-bom:34.2.0"))
+    implementation("com.google.firebase:firebase-analytics")
     implementation("androidx.compose.material:material-icons-extended:1.5.0")
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("androidx.compose.material:material-icons-extended:<latest-version>")

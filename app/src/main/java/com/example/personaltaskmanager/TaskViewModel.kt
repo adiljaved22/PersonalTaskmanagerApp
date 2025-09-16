@@ -2,6 +2,7 @@ package com.example.personaltaskmanager
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -101,7 +102,7 @@ class TaskViewModel : ViewModel() {
         }
     }
 
-    fun addEvent(idd: Int, name: String, location: String, date: String, time:String) {
+  /*  fun addEvent(idd: Int, name: String, location: String, date: String, time:String) {
         viewModelScope.launch {
             try {
 
@@ -124,7 +125,18 @@ class TaskViewModel : ViewModel() {
                 e.printStackTrace()
             }
         }
-    }
+    }*/
+  fun addEventToFirestore(event: Events) {
+      val db = FirebaseFirestore.getInstance()
+      val eventsCollection = db.collection("events")
+      eventsCollection.add(event)
+          .addOnSuccessListener {
+              println("Event Added")
+          }
+          .addOnFailureListener { e ->
+              println("Error: $e")
+          }
+  }
 
     fun updateTask(taskId: Int) {
         viewModelScope.launch {

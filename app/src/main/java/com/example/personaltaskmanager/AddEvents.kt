@@ -54,7 +54,7 @@ import java.util.Locale
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit, onBackCLick: () -> Unit) {
+fun AddEvents(iewModel: TaskViewModel = viewModel(), onBack: () -> Unit, onBackCLick: () -> Unit) {
     var eventName by remember { mutableStateOf("") }
     var eventLocation by remember { mutableStateOf("") }
     var date by remember { mutableStateOf("") }
@@ -66,8 +66,9 @@ fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit, onBack
     var timeError by remember { mutableStateOf("") }
     val state = rememberDatePickerState()
     var openDialogBox by rememberSaveable { mutableStateOf(false) }
-    var openTimeDialog by  rememberSaveable { mutableStateOf(false) }
-    var showDialog by  rememberSaveable { mutableStateOf(false) }
+    var openTimeDialog by rememberSaveable { mutableStateOf(false) }
+    var showDialog by rememberSaveable { mutableStateOf(false) }
+
     if (showDialog) {
         InfoDialog(
             title = "Ahhh!!!",
@@ -194,14 +195,22 @@ fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit, onBack
                         val formatedTime = DateTimeFormatter.ofPattern("HH:mm:ss")
                         /* val LocalDate = LocalDate.parse(date, formatedDate)
                          val LocalTime = LocalTime.parse(time, formatedTime)*/
-                        viewModel.addEvent(
-                            0,
-                            eventName,
-                            eventLocation,
-                            date,
-                            time
+                        /*  viewModel.addEvent(
+                              0,
+                              eventName,
+                              eventLocation,
+                              date,
+                              time
 
-                        )
+                          )*/
+
+                            Events(
+                                id = 0,
+                                event_name = eventName,
+                                location = eventLocation,
+                                event_date = date,
+                                event_time = time
+                            )
 
                         onBackCLick()
                         Toast.makeText(context, "Added Successfully", Toast.LENGTH_LONG).show()
