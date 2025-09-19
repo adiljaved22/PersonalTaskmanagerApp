@@ -35,6 +35,45 @@ class TaskViewModel : ViewModel() {
         startAutoRefreshEvents()
     }
 
+    fun addTask(task: Task) {
+        val db = FirebaseFirestore.getInstance()
+        val id = db.collection("task").document()
+        val taskId = task.copy(firestoreId = id.id)
+        id.set(taskId)
+            .addOnSuccessListener { println("Task Added") }
+            .addOnFailureListener { e -> println("Task Failed,$e") }
+
+    }
+
+    fun addEventToFirestore(event: Events) {
+        val db = FirebaseFirestore.getInstance()
+        val docRef = db.collection("events").document()
+        val eventWithId = event.copy(firestoreId = docRef.id)
+        docRef.set(eventWithId)
+            .addOnSuccessListener {
+                println("Event Added")
+            }
+            .addOnFailureListener { e ->
+                println("Error: $e")
+            }
+    }
+
+    fun loadTasks() {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("task")
+            .get()
+            .addOnSuccessListener { result ->
+                val tasks = result.map { doc ->
+                    val task = doc.toObject(Task::class.java)
+                    task.copy(firestoreId = doc.id)
+                }
+                _pendingTasks.value = tasks.filter { !it.completed }
+                _completedTasks.value = tasks.filter { it.completed }
+            }
+            .addOnFailureListener { e ->
+                e.printStackTrace()
+            }
+    }
 
     fun loadEvents() {
         val db = FirebaseFirestore.getInstance()
@@ -69,6 +108,62 @@ class TaskViewModel : ViewModel() {
             }
     }
 
+    fun updateTask(firestoreId: String) {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("task").document(firestoreId).update("completed", true)
+            .addOnSuccessListener {
+                Log.d("firestore", "Done")
+                loadTasks()
+            }.addOnFailureListener { e ->
+                println("error, $e")
+            }
+
+    }
+
+    fun updateEventInFirestore(event: Events) {
+        val db = FirebaseFirestore.getInstance()
+        if (event.firestoreId.isNotEmpty()) {
+            db.collection("events").document(event.firestoreId)
+                .set(event)
+                .addOnSuccessListener {
+                    println("Event Updated")
+                }
+                .addOnFailureListener { e ->
+                    println("Error: $e")
+                }
+        } else {
+            println("Error: No FirestoreId available")
+        }
+    }
+
+    fun delete(firestoreId: String) {
+        val db = FirebaseFirestore.getInstance()
+        val taskRef = db.collection("task").document(firestoreId)
+        taskRef.delete()
+            .addOnSuccessListener {
+                _completedTasks.value =
+                    _completedTasks.value.filter { it.firestoreId != firestoreId }
+                _pendingTasks.value = _pendingTasks.value.filter { it.firestoreId != firestoreId }
+            }.addOnFailureListener { e ->
+                println("Error deleting event: $e")
+            }
+    }
+
+    fun deleteEventFromFirestore(firestoreId: String) {
+        val db = FirebaseFirestore.getInstance()
+        val eventRef = db.collection("events").document(firestoreId)
+
+        eventRef.delete()
+            .addOnSuccessListener {
+                println("Event Deleted Successfully")
+
+                _comingEvent.value = _comingEvent.value.filter { it.firestoreId != firestoreId }
+                _pastEvent.value = _pastEvent.value.filter { it.firestoreId != firestoreId }
+            }
+            .addOnFailureListener { e ->
+                println("Error deleting event: $e")
+            }
+    }
 
     private fun startAutoRefreshEvents() {
         viewModelScope.launch {
@@ -89,19 +184,6 @@ class TaskViewModel : ViewModel() {
     }
 
 
-    fun addEventToFirestore(event: Events) {
-        val db = FirebaseFirestore.getInstance()
-        val docRef = db.collection("events").document()
-        val eventWithId = event.copy(firestoreId = docRef.id)
-        docRef.set(eventWithId)
-            .addOnSuccessListener {
-                println("Event Added")
-            }
-            .addOnFailureListener { e ->
-                println("Error: $e")
-            }
-    }
-
     /*  fun update(task: Task) {
         val db = FirebaseFirestore.getInstance()
         if (task.firestoreId.isNotEmpty()) {
@@ -118,38 +200,6 @@ class TaskViewModel : ViewModel() {
         }
     }*/
 
-    fun updateEventInFirestore(event: Events) {
-        val db = FirebaseFirestore.getInstance()
-        if (event.firestoreId.isNotEmpty()) {
-            db.collection("events").document(event.firestoreId)
-                .set(event)
-                .addOnSuccessListener {
-                    println("Event Updated")
-                }
-                .addOnFailureListener { e ->
-                    println("Error: $e")
-                }
-        } else {
-            println("Error: No FirestoreId available")
-        }
-    }
-
-
-    fun deleteEventFromFirestore(firestoreId: String) {
-        val db = FirebaseFirestore.getInstance()
-        val eventRef = db.collection("events").document(firestoreId)
-
-        eventRef.delete()
-            .addOnSuccessListener {
-                println("Event Deleted Successfully")
-
-                _comingEvent.value = _comingEvent.value.filter { it.firestoreId != firestoreId }
-                _pastEvent.value = _pastEvent.value.filter { it.firestoreId != firestoreId }
-            }
-            .addOnFailureListener { e ->
-                println("Error deleting event: $e")
-            }
-    }
 
     /*  fun loadTasks() {
           viewModelScope.launch {
@@ -178,17 +228,6 @@ class TaskViewModel : ViewModel() {
           }
       }*/
 
-    fun updateTask(firestoreId: String) {
-        val db = FirebaseFirestore.getInstance()
-        db.collection("task").document(firestoreId).update("completed", true)
-            .addOnSuccessListener {
-                Log.d("firestore", "Done")
-                loadTasks()
-            }.addOnFailureListener { e ->
-                println("error, $e")
-            }
-
-    }
 
     /*  fun updateTask(taskId: Int) {
       viewModelScope.launch {
@@ -200,43 +239,6 @@ class TaskViewModel : ViewModel() {
           }
       }
   }*/
-    fun addTask(task: Task) {
-        val db = FirebaseFirestore.getInstance()
-        val id = db.collection("task").document()
-        val taskId = task.copy(firestoreId = id.id)
-        id.set(taskId)
 
-
-    }
-
-    fun loadTasks() {
-        val db = FirebaseFirestore.getInstance()
-        db.collection("task")
-            .get()
-            .addOnSuccessListener { result ->
-                val tasks = result.map { doc ->
-                    val task = doc.toObject(Task::class.java)
-                    task.copy(firestoreId = doc.id)
-                }
-                _pendingTasks.value = tasks.filter { !it.completed }
-                _completedTasks.value = tasks.filter { it.completed }
-            }
-            .addOnFailureListener { e ->
-                e.printStackTrace()
-            }
-    }
-
-    fun delete(firestoreId: String) {
-        val db = FirebaseFirestore.getInstance()
-        val taskRef = db.collection("task").document(firestoreId)
-        taskRef.delete()
-            .addOnSuccessListener {
-                _completedTasks.value =
-                    _completedTasks.value.filter { it.firestoreId != firestoreId }
-                _pendingTasks.value = _pendingTasks.value.filter { it.firestoreId != firestoreId }
-            }.addOnFailureListener { e ->
-                println("Error deleting event: $e")
-            }
-    }
 
 }
