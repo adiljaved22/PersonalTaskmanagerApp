@@ -110,7 +110,8 @@ class TaskViewModel : ViewModel() {
 
     fun updateTask(firestoreId: String) {
         val db = FirebaseFirestore.getInstance()
-        db.collection("task").document(firestoreId).update("completed", true)
+        db.collection("task").document(firestoreId)
+            .update("completed", true)
             .addOnSuccessListener {
                 Log.d("firestore", "Done")
                 loadTasks()
@@ -170,6 +171,7 @@ class TaskViewModel : ViewModel() {
             while (true) {
                 try {
                     loadEvents()
+                    loadTasks()
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -179,11 +181,8 @@ class TaskViewModel : ViewModel() {
     }
 
     fun getEventByFirestoreId(firestoreId: String): Events? {
-        return _comingEvent.value.find { it.firestoreId == firestoreId }
-            ?: _pastEvent.value.find { it.firestoreId == firestoreId }
+        return _comingEvent.value.find { it.firestoreId == firestoreId } ?: _pastEvent.value.find { it.firestoreId == firestoreId }
     }
-
-
     /*  fun update(task: Task) {
         val db = FirebaseFirestore.getInstance()
         if (task.firestoreId.isNotEmpty()) {
@@ -199,8 +198,6 @@ class TaskViewModel : ViewModel() {
             println("Error: No FirestoreId available")
         }
     }*/
-
-
     /*  fun loadTasks() {
           viewModelScope.launch {
               try {
@@ -212,7 +209,6 @@ class TaskViewModel : ViewModel() {
               }
           }
       }*/
-
     /*  fun addTask(id: Int, title: String, description: String, location: String, comp: Boolean) {
 
           viewModelScope.launch {
@@ -228,7 +224,6 @@ class TaskViewModel : ViewModel() {
           }
       }*/
 
-
     /*  fun updateTask(taskId: Int) {
       viewModelScope.launch {
           try {
@@ -239,6 +234,4 @@ class TaskViewModel : ViewModel() {
           }
       }
   }*/
-
-
 }

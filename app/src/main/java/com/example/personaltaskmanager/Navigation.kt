@@ -14,7 +14,17 @@ import androidx.navigation.navArgument
 fun Navigation(viewModel: TaskViewModel = viewModel()) {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "Home") {
+    NavHost(navController = navController, startDestination = "login") {
+        composable("login"){
+            Login(
+                NavigateToLogin = { navController.navigate("Home") },
+                NavigateToSignUp = { navController.navigate("SignUp") }
+                ,navController = navController
+            )
+        }
+        composable("SignUp") {
+            SignUp(navController = navController)
+        }
         composable("Home") {
             HomeScreen(
                 NavigateToTask = { navController.navigate("Task") },
