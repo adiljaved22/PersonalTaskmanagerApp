@@ -24,10 +24,10 @@ fun Edit(
     onBack: () -> Unit,
     viewModel: TaskViewModel = viewModel()
 ) {
-    var name by remember { mutableStateOf(EventsToBeEdit.event_name) }
-    var location by remember { mutableStateOf(EventsToBeEdit.location) }
-    var date by remember { mutableStateOf(EventsToBeEdit.event_date) }
-    var time by remember { mutableStateOf(EventsToBeEdit.event_time) }
+    var name by remember { mutableStateOf(EventsToBeEdit.event_name?:"") }
+    var location by remember { mutableStateOf(EventsToBeEdit.location?:"") }
+    var date by remember { mutableStateOf(EventsToBeEdit.event_date?:"")}
+    var time by remember { mutableStateOf(EventsToBeEdit.event_time?:"") }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -46,8 +46,16 @@ fun Edit(
         OutlinedTextField(value = time, onValueChange = { time = it }, label = { Text("Time") })
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = {
-            viewModel.update(EventsToBeEdit.id, name, location, date, time)
+            val update= Events( id = EventsToBeEdit.id,
+                firestoreId =EventsToBeEdit.firestoreId,
+                event_name = name,
+                location = location,
+                event_date = date,
+                event_time = time
+            )
+            viewModel.updateEventInFirestore(update)
             onBack()
+
         }) {
             Text("Update")
         }

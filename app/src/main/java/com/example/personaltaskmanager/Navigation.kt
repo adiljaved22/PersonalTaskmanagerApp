@@ -1,5 +1,6 @@
 package com.example.personaltaskmanager
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.window.Popup
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -36,7 +37,21 @@ fun Navigation(viewModel: TaskViewModel = viewModel()) {
                 },
             )
         }
-        composable(
+        composable("edit/{firestoreId}") { backStackEntry ->
+            val firestoreId = backStackEntry.arguments?.getString("firestoreId") ?: ""
+            val eventToEdit = viewModel.getEventByFirestoreId(firestoreId)
+            if (eventToEdit != null) {
+                Edit(
+                    EventsToBeEdit = eventToEdit,
+                    onBack = { navController.popBackStack() },
+                    viewModel = viewModel
+                )
+            } else {
+                Text("Event not found")
+            }
+        }
+
+        /*composable(
             "Edit/{taskId}",
             arguments = listOf(navArgument("taskId") { type = NavType.IntType })
         ) { entry ->
@@ -49,7 +64,7 @@ fun Navigation(viewModel: TaskViewModel = viewModel()) {
 
                 )
             }
-        }
+        }*/
         composable("AddTask")
         {
             AddTask(

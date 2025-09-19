@@ -63,7 +63,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
-
+/*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventsScreen(
@@ -188,7 +188,7 @@ fun EventsScreen(
                                                 Text("Time: ${task.event_time}")
                                             }
                                             IconButton(onClick = {
-                                                navController.navigate("Edit/${task.id}")
+                                                navController.navigate("Edit/${task.firestoreId}")
                                             }) {
                                                 Icon(
                                                     imageVector = Icons.Rounded.Edit,
@@ -203,7 +203,7 @@ fun EventsScreen(
 
                                                     confirmButton = {
                                                         Button(onClick = {
-                                                            viewModel.deleteEvent(task.id)
+                                                            viewModel.deleteEventFromFirestore(task.firestoreId)
 
 
                                                             dialogBox = false
@@ -290,7 +290,7 @@ fun EventsScreen(
 
                                                     confirmButton = {
                                                         Button(onClick = {
-                                                            viewModel.deleteEvent(tasks.id)
+                                                            viewModel.deleteEventFromFirestore(tasks.firestoreId)
 
 
                                                             dialogBox = false
@@ -356,6 +356,191 @@ fun EventsScreen(
                 }
             ) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = null)
+            }
+        }
+    }
+}*/
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EventsScreen(
+    onBack: () -> Unit,
+    navController: NavController,
+    viewModel: TaskViewModel = viewModel()
+) {
+    LaunchedEffect(Unit) {
+        viewModel.loadEvents()
+    }
+
+
+    var eventToDelete by remember { mutableStateOf<Events?>(null) }
+
+    val context = LocalContext.current
+    val coming by viewModel.comingEvent.collectAsState()
+    val past by viewModel.pastEvent.collectAsState()
+
+    val tabItems = listOf(
+        TabItem(
+            title = "Coming Events",
+            unSelectedIcon = Icons.Outlined.Event,
+            selectedIcon = Icons.Filled.Event
+        ),
+        TabItem(
+            title = "Past Events",
+            unSelectedIcon = Icons.Outlined.EventAvailable,
+            selectedIcon = Icons.Filled.EventAvailable
+        )
+    )
+
+    val pagerState = rememberPagerState(pageCount = { tabItems.size })
+    val coroutineScope = rememberCoroutineScope()
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    titleContentColor = Color.White,
+                    containerColor = colorResource(id = R.color.teal_700),
+                ),
+                title = { Text("Events") },
+                actions = {
+                    IconButton(onClick = { onBack() }) {
+                        Icon(
+                            imageVector = Icons.Filled.Home,
+                            contentDescription = "Home",
+                            tint = Color.White
+                        )
+                    }
+                }
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            TabRow(selectedTabIndex = pagerState.currentPage) {
+                tabItems.forEachIndexed { index, item ->
+                    Tab(
+                        selected = index == pagerState.currentPage,
+                        onClick = {
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(index)
+                            }
+                        },
+                        text = { Text(item.title) },
+                        icon = {
+                            Icon(
+                                imageVector = if (index == pagerState.currentPage) {
+                                    item.selectedIcon
+                                } else item.unSelectedIcon,
+                                contentDescription = null
+                            )
+                        }
+                    )
+                }
+            }
+
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxSize()
+            ) { index ->
+                if (index == 0) {
+                    EventList(
+                        events = coming,
+                        navController = navController,
+                        onDeleteClick = { event -> eventToDelete = event }
+                    )
+                } else {
+                    EventList(
+                        events = past,
+                        navController = navController,
+                        onDeleteClick = { event -> eventToDelete = event }
+                    )
+                }
+            }
+        }
+        if (eventToDelete != null) {
+            AlertDialog(
+                onDismissRequest = { eventToDelete = null },
+                title = { Text("Are you sure you want to delete this event?") },
+                confirmButton = {
+                    Button(onClick = {
+                        viewModel.deleteEventFromFirestore(eventToDelete!!.firestoreId)
+                        eventToDelete = null
+                    }) {
+                        Text("Confirm")
+                    }
+                },
+                dismissButton = {
+                    Button(onClick = { eventToDelete = null }) {
+                        Text("Dismiss")
+                    }
+                }
+            )
+        }
+
+        Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier.fillMaxSize()) {
+            FloatingActionButton(
+                modifier = Modifier.padding(20.dp),
+                contentColor = Color.White,
+                containerColor = colorResource(id = R.color.teal_700),
+                onClick = {
+                    navController.navigate("AddEvents")
+                }
+            ) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = null)
+            }
+        }
+    }
+}
+
+@Composable
+fun EventList(
+    events: List<Events>,
+    navController: NavController,
+    onDeleteClick: (Events) -> Unit
+) {
+    if (events.isEmpty()) {
+        Text("\t Nothing to display yet. Add some Events!")
+    } else {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(top = 15.dp, bottom = 15.dp),
+            verticalArrangement = Arrangement.spacedBy(15.dp)
+        ) {
+            items(events) { event ->
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.cardElevation(6.dp),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("Title: ${event.event_name}")
+                            Text("Location: ${event.location}")
+                            Text("Date: ${event.event_date}")
+                            Text("Time: ${event.event_time}")
+                        }
+                        IconButton(onClick = {
+                            navController.navigate("Edit/${event.firestoreId}")
+                        }) {
+                            Icon(imageVector = Icons.Rounded.Edit, contentDescription = null)
+                        }
+
+                        IconButton(onClick = { onDeleteClick(event) }) {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = null
+                            )
+                        }
+                    }
+                }
             }
         }
     }
