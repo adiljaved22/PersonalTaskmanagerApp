@@ -14,6 +14,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,6 +31,8 @@ import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -38,6 +45,7 @@ fun Login(NavigateToLogin: () -> Unit, NavigateToSignUp: () -> Unit, navControll
     var emailError by remember { mutableStateOf("") }
     var passwordError by remember { mutableStateOf("") }
     val context=LocalContext.current
+    var passwordVisible by remember { mutableStateOf(false) }
     Column(
 
         modifier = Modifier
@@ -70,8 +78,27 @@ fun Login(NavigateToLogin: () -> Unit, NavigateToSignUp: () -> Unit, navControll
                 )
 
             },
+            visualTransformation =
+                if (passwordVisible) {
+                    VisualTransformation.None
+
+                } else {
+                    PasswordVisualTransformation('*')
+                },
+            trailingIcon = {
+                val visibilityIcon =
+                    if (passwordVisible) {
+                        Icons.Filled.Visibility
+                    } else {
+                        Icons.Filled.VisibilityOff
+                    }
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(imageVector = visibilityIcon, contentDescription = null)
+                }
+            },
             modifier = Modifier.fillMaxWidth()
         )
+
         Spacer(modifier = Modifier.height(8.dp))
         Button(
 

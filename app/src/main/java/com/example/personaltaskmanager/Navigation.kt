@@ -3,23 +3,31 @@ package com.example.personaltaskmanager
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.window.Popup
+import androidx.core.widget.ContentLoadingProgressBar
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+
 
 @Composable
 fun Navigation(viewModel: TaskViewModel = viewModel()) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = "login") {
-        composable("login"){
+        composable("login") {
             Login(
-                NavigateToLogin = { navController.navigate("Home") },
-                NavigateToSignUp = { navController.navigate("SignUp") }
-                ,navController = navController
+                NavigateToLogin = {
+                    navController.navigate("Home") {
+                        popUpTo("login") {
+                            inclusive = true
+                        }
+                    }
+                },
+
+                NavigateToSignUp = { navController.navigate("SignUp") },
+                navController = navController
             )
         }
         composable("SignUp") {
@@ -28,7 +36,25 @@ fun Navigation(viewModel: TaskViewModel = viewModel()) {
         composable("Home") {
             HomeScreen(
                 NavigateToTask = { navController.navigate("Task") },
-                NavigateToEvents = { navController.navigate("Events") }
+                NavigateToEvents = { navController.navigate("Events") },
+                onBack = {
+                    navController.navigate("login") {
+                        popUpTo(0) {
+                            inclusive = true
+                        }
+                        launchSingleTop=true
+                    }
+
+                },
+                logout = {
+                    navController.navigate("login") {
+                        popUpTo(0) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
+                }
+
 
             )
         }
@@ -37,12 +63,14 @@ fun Navigation(viewModel: TaskViewModel = viewModel()) {
             TaskScreen(
                 navController = navController,
                 onBack = {
-                    navController.popBackStack() })
+                    navController.popBackStack()
+                })
         }
         composable("Events")
         {
             EventsScreen(
-                navController = navController, onBack = {
+                navController = navController,
+                onBack = {
                     navController.popBackStack()
                 },
             )

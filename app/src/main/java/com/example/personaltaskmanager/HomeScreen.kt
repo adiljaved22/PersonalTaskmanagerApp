@@ -7,8 +7,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.rounded.EventAvailable
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,7 +23,8 @@ import androidx.compose.ui.unit.sp
 fun HomeScreen(
     NavigateToTask: () -> Unit,
     NavigateToEvents: () -> Unit
-
+,onBack: () -> Unit,
+    logout:()->Unit
 ) {
     Column(
         modifier = Modifier
@@ -33,11 +36,12 @@ fun HomeScreen(
 
         Text(
             text = "PERSONAL\nTASK\nMANAGER",
-            fontSize = 32.sp,
+            fontSize =32.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black,
             modifier = Modifier.padding(bottom = 30.dp),
             lineHeight = 40.sp
+
         )
 
         Row(
@@ -95,4 +99,8 @@ fun HomeScreen(
             }
         }
     }
-}
+    Box(contentAlignment = Alignment.BottomEnd,){
+    Button(onClick = {logout()}) {
+        Text("Logout")
+    }
+}}
