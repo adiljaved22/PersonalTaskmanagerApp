@@ -1,3 +1,4 @@
+
 package com.example.personaltaskmanager
 
 import android.app.TimePickerDialog
@@ -50,8 +51,6 @@ import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit, onBackCLick: () -> Unit) {
@@ -66,9 +65,8 @@ fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit, onBack
     var timeError by remember { mutableStateOf("") }
     val state = rememberDatePickerState()
     var openDialogBox by rememberSaveable { mutableStateOf(false) }
-    var openTimeDialog by rememberSaveable { mutableStateOf(false) }
-    var showDialog by rememberSaveable { mutableStateOf(false) }
-
+    var openTimeDialog by  rememberSaveable { mutableStateOf(false) }
+    var showDialog by  rememberSaveable { mutableStateOf(false) }
     if (showDialog) {
         InfoDialog(
             title = "Ahhh!!!",
@@ -191,16 +189,18 @@ fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit, onBack
                             as ConnectivityManager
                     val networkInfo = cm.activeNetworkInfo
                     if (networkInfo != null && networkInfo.isConnected) {
+                        val formatedDate = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                        val formatedTime = DateTimeFormatter.ofPattern("HH:mm:ss")
+                        /* val LocalDate = LocalDate.parse(date, formatedDate)
+                         val LocalTime = LocalTime.parse(time, formatedTime)*/
+                        viewModel.addEvent(
+                            0,
+                            eventName,
+                            eventLocation,
+                            date,
+                            time
 
-                        val newevent = Events(
-
-                            id = 0,
-                            event_name = eventName,
-                            location = eventLocation,
-                            event_date = date,
-                            event_time = time
                         )
-                        viewModel.addEventToFirestore(newevent)
 
                         onBackCLick()
                         Toast.makeText(context, "Added Successfully", Toast.LENGTH_LONG).show()
@@ -246,7 +246,7 @@ fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit, onBack
         if (openTimeDialog) {
             TimePickerDialog(
                 LocalContext.current, { _, hour: Int, minute: Int ->
-                    time = String.format("%02d:%02d", hour, minute)
+                    time = String.format("%02d:%02d:00", hour, minute)
                     openTimeDialog = false
                 }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true
             ).show()

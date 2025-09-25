@@ -1,3 +1,4 @@
+
 package com.example.personaltaskmanager
 
 import androidx.compose.foundation.layout.*
@@ -139,11 +140,11 @@ fun TaskScreen(
                 modifier = Modifier.weight(1f)
             ) { index ->
                 if (index == 0) {
-                   /* val context = LocalContext.current
+                    val context = LocalContext.current
                     val cm = context.getSystemService(android.content.Context.CONNECTIVITY_SERVICE)
                             as android.net.ConnectivityManager
                     val networkInfo = cm.activeNetworkInfo
-                    if (networkInfo != null && networkInfo.isConnected) {*/
+                    if (networkInfo != null && networkInfo.isConnected) {
 
 
                         if (pending.isEmpty()) {
@@ -171,7 +172,7 @@ fun TaskScreen(
                                                 Text("Description: ${task.description}")
                                                 Text("Location: ${task.location}")
                                             }
-                                            IconButton(onClick = { viewModel.updateTask(task.firestoreId) }) {
+                                            IconButton(onClick = { viewModel.updateTask(task.id) }) {
                                                 Icon(
                                                     imageVector = Icons.Rounded.DoneOutline,
                                                     contentDescription = null
@@ -184,7 +185,7 @@ fun TaskScreen(
 
                                                     confirmButton = {
                                                         Button(onClick = {
-                                                            viewModel.delete(task.firestoreId)
+                                                            viewModel.delete(task.id)
 
 
                                                             dialogBox = false
@@ -217,7 +218,7 @@ fun TaskScreen(
                                 }
                             }
                         }
-                   /* } else {
+                    } else {
 
                         Box(
                             modifier = Modifier.fillMaxSize(),
@@ -229,14 +230,14 @@ fun TaskScreen(
                                 fontWeight = FontWeight.Medium
                             )
                         }
-                    }*/
+                    }
 
                 } else if (index == 1) {
                     val context = LocalContext.current
-                    /*val cm = context.getSystemService(android.content.Context.CONNECTIVITY_SERVICE)
+                    val cm = context.getSystemService(android.content.Context.CONNECTIVITY_SERVICE)
                             as android.net.ConnectivityManager
                     val networkInfo = cm.activeNetworkInfo
-                    if (networkInfo != null && networkInfo.isConnected) {*/
+                    if (networkInfo != null && networkInfo.isConnected) {
                         if (completed.isEmpty()) {
                             Text("\t Nothing to display yet.Add some Tasks!")
                         } else {
@@ -269,7 +270,7 @@ fun TaskScreen(
 
                                                     confirmButton = {
                                                         Button(onClick = {
-                                                            viewModel.delete(tasks.firestoreId)
+                                                            viewModel.delete(tasks.id)
 
 
                                                             dialogBox = false
@@ -301,7 +302,7 @@ fun TaskScreen(
                                 }
                             }
                         }
-                  /*  } else {
+                    } else {
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
@@ -312,7 +313,7 @@ fun TaskScreen(
                                 fontWeight = FontWeight.Medium
                             )
                         }
-                    }*/
+                    }
                 }
             }
         }

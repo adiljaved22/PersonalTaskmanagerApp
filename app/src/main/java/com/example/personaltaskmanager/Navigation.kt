@@ -1,15 +1,14 @@
+
 package com.example.personaltaskmanager
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.window.Popup
-import androidx.core.widget.ContentLoadingProgressBar
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-
+import androidx.navigation.navArgument
 
 @Composable
 fun Navigation(viewModel: TaskViewModel = viewModel()) {
@@ -63,33 +62,17 @@ fun Navigation(viewModel: TaskViewModel = viewModel()) {
             TaskScreen(
                 navController = navController,
                 onBack = {
-                    navController.popBackStack()
-                })
+                    navController.popBackStack() })
         }
         composable("Events")
         {
             EventsScreen(
-                navController = navController,
-                onBack = {
+                navController = navController, onBack = {
                     navController.popBackStack()
                 },
             )
         }
-        composable("edit/{firestoreId}") { backStackEntry ->
-            val firestoreId = backStackEntry.arguments?.getString("firestoreId") ?: ""
-            val eventToEdit = viewModel.getEventByFirestoreId(firestoreId)
-            if (eventToEdit != null) {
-                Edit(
-                    EventsToBeEdit = eventToEdit,
-                    onBack = { navController.popBackStack() },
-                    viewModel = viewModel
-                )
-            } else {
-                Text("Event not found")
-            }
-        }
-
-        /*composable(
+        composable(
             "Edit/{taskId}",
             arguments = listOf(navArgument("taskId") { type = NavType.IntType })
         ) { entry ->
@@ -100,9 +83,9 @@ fun Navigation(viewModel: TaskViewModel = viewModel()) {
                     EventsToBeEdit = it,
                     onBack = { navController.popBackStack() },
 
-                )
+                    )
             }
-        }*/
+        }
         composable("AddTask")
         {
             AddTask(

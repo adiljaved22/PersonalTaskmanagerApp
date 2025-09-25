@@ -1,3 +1,4 @@
+
 package com.example.personaltaskmanager
 
 
@@ -166,8 +167,7 @@ fun AddTask(onBack: () -> Unit, onBackClick: () -> Unit, viewModel: TaskViewMode
                             val networkInfo = cm.activeNetworkInfo
 
                             if (networkInfo != null && networkInfo.isConnected) {
-                                val newTask= Task(id=0, title = name, description = description, location = location, completed = false)
-                                viewModel.addTask(newTask)
+                                viewModel.addTask(0, name, description, location, false)
                                 onBackClick()
                                 Toast.makeText(context, "Added Successfully", Toast.LENGTH_SHORT)
                                     .show()

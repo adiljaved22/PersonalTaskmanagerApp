@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.Button
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Tab
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -19,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,16 +36,17 @@ import androidx.navigation.NavController
 
 @Composable
 fun SignUp(navController: NavController) {
-    var name by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var name by rememberSaveable { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-    var emailError by remember { mutableStateOf("") }
-    var passwordError by remember { mutableStateOf("") }
-    var confirmPasswordError by remember { mutableStateOf("") }
-    var nameError by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
+    var emailError by rememberSaveable { mutableStateOf("") }
+    var passwordError by rememberSaveable { mutableStateOf("") }
+    var confirmPasswordError by rememberSaveable { mutableStateOf("") }
+    var nameError by rememberSaveable { mutableStateOf("") }
+    var passwordVisible by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
+    val viewModel= TaskViewModel()
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -140,7 +143,7 @@ fun SignUp(navController: NavController) {
         Button(
             modifier = Modifier.fillMaxWidth(),
             onClick = {
-
+            viewModel.SignUp(name,email,password)
                 nameError = when {
                     name.isBlank() -> "Name is required"
                     else -> ""

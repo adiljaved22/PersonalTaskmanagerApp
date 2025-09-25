@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,11 +41,12 @@ import kotlin.text.isNotEmpty
 
 @Composable
 fun Login(NavigateToLogin: () -> Unit, NavigateToSignUp: () -> Unit, navController: NavController) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
     var emailError by remember { mutableStateOf("") }
     var passwordError by remember { mutableStateOf("") }
-    val context=LocalContext.current
+    val context = LocalContext.current
+    val viewModel = TaskViewModel()
     var passwordVisible by remember { mutableStateOf(false) }
     Column(
 
@@ -105,6 +107,7 @@ fun Login(NavigateToLogin: () -> Unit, NavigateToSignUp: () -> Unit, navControll
             modifier = Modifier.fillMaxWidth(),
 
             onClick = {
+                viewModel.login(email, password)
                 emailError = when {
                     email.isBlank() -> "Email is required"
                     !isValidEmail(email) -> "Invalid Email"
@@ -117,8 +120,7 @@ fun Login(NavigateToLogin: () -> Unit, NavigateToSignUp: () -> Unit, navControll
                 }
                 if (emailError.isEmpty() && passwordError.isEmpty()) {
                     navController.navigate("Home")
-                }else
-                {
+                } else {
                     Toast.makeText(context, "Login Unsuccessful", Toast.LENGTH_LONG).show()
                 }
             }) {
@@ -134,12 +136,7 @@ fun Login(NavigateToLogin: () -> Unit, NavigateToSignUp: () -> Unit, navControll
         }
     }
 
-  /*      Column {
-            Spacer(modifier = Modifier.height(8.dp))
-            Text("-----------------or----------------")
-        }*/
-    }
-
+}
 
 
 fun isValidEmail(email: String): Boolean {

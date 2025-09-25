@@ -1,3 +1,4 @@
+
 package com.example.personaltaskmanager
 
 import androidx.compose.foundation.background
@@ -23,7 +24,7 @@ import androidx.compose.ui.unit.sp
 fun HomeScreen(
     NavigateToTask: () -> Unit,
     NavigateToEvents: () -> Unit
-,onBack: () -> Unit,
+    ,onBack: () -> Unit,
     logout:()->Unit
 ) {
     Column(
@@ -100,7 +101,7 @@ fun HomeScreen(
         }
     }
     Box(contentAlignment = Alignment.BottomEnd,){
-    Button(onClick = {logout()}) {
-        Text("Logout")
-    }
-}}
+        Button(onClick = {logout()}) {
+            Text("Logout")
+        }
+    }}
