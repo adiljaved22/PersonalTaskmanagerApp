@@ -1,9 +1,13 @@
 package com.example.personaltaskmanager
 
+import com.google.gson.annotations.SerializedName
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.DELETE
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -52,10 +56,17 @@ interface ApiServices {
 
     @POST("user/sign_up")
     suspend fun signUp(@Body request: User): retrofit2.Response<User>
+
+    @FormUrlEncoded
     @POST("login")
     suspend fun login(
-        @Query("email") email: String,
-        @Query("password") password: String
+        @Field("username") username: String,
+        @Field("password") password: String
+    ): Response<Login>
+
+    data class TokenResponse(
+        @SerializedName("access_token") val token: String,
+        @SerializedName("token_type") val token_type: String
     )
 }
 

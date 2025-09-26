@@ -43,7 +43,9 @@ android {
 dependencies {
     val nav_version = "2.7.4"
     implementation("com.google.firebase:firebase-firestore-ktx:24.4.0")
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
 // Jetpack Compose
+
     implementation("androidx.constraintlayout:constraintlayout:2.0.0-alpha4")/////
     implementation("androidx.compose.ui:ui:1.5.0")
     implementation("androidx.compose.material:material:1.5.0")
@@ -70,7 +72,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-
+    implementation(platform("androidx.compose:compose-bom:2025.09.01")) // Compose BOM
+    implementation("com.auth0.android:auth0:2.0.0") // Example: replace with the actual Auth0 SDK
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

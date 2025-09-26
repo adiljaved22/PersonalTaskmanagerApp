@@ -1,7 +1,10 @@
 package com.example.personaltaskmanager
 
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,7 +27,7 @@ class TaskViewModel : ViewModel() {
 
     private var _pastEvent = MutableStateFlow<List<Events>>(emptyList())
     val pastEvent: StateFlow<List<Events>> = _pastEvent
-
+     val context = LocalContext.current
 
     init {
         loadTasks()
@@ -214,19 +217,37 @@ class TaskViewModel : ViewModel() {
                 } else {
                     println("fail")
                 }
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 println("$e")
             }
         }
 
     }
-    fun login(email: String, password: String){
-        viewModelScope.launch {
-            try {
-               Services.login(email, password)
 
-            }catch (e: Exception)
-            {
+    fun login(email: String, password: String) {
+        viewModelScope.launch {
+
+           val masterKey = MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
+            val sharedPreferences= EncryptedSharedPreferences.create(
+                context,
+                "secure_prefs",
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+            sharedPreferences.edit().putString("access_token", email).apply()
+
+            try {
+                val response = Services.login(email, password)
+                if (response.isSuccessful) {
+                    val data = response.body()
+                    println(" Success $data")
+
+                } else {
+                    println("Error: ${response.code()}")
+                }
+
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
