@@ -36,17 +36,22 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlin.text.isNotEmpty
 
 @Composable
-fun Login(NavigateToLogin: () -> Unit, NavigateToSignUp: () -> Unit, navController: NavController) {
+fun Login(
+    NavigateToLogin: () -> Unit,
+    NavigateToSignUp: () -> Unit,
+    navController: NavController,
+    viewModel: TaskViewModel = viewModel()
+) {
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var emailError by remember { mutableStateOf("") }
     var passwordError by remember { mutableStateOf("") }
     val context = LocalContext.current
-    val viewModel = TaskViewModel()
     var passwordVisible by remember { mutableStateOf(false) }
     Column(
 
@@ -107,7 +112,6 @@ fun Login(NavigateToLogin: () -> Unit, NavigateToSignUp: () -> Unit, navControll
             modifier = Modifier.fillMaxWidth(),
 
             onClick = {
-                viewModel.login(email, password)
                 emailError = when {
                     email.isBlank() -> "Email is required"
                     !isValidEmail(email) -> "Invalid Email"
@@ -119,7 +123,7 @@ fun Login(NavigateToLogin: () -> Unit, NavigateToSignUp: () -> Unit, navControll
                     else -> ""
                 }
                 if (emailError.isEmpty() && passwordError.isEmpty()) {
-                    navController.navigate("Home")
+                     viewModel.login(email,password)
                 } else {
                     Toast.makeText(context, "Login Unsuccessful", Toast.LENGTH_LONG).show()
                 }

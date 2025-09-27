@@ -72,8 +72,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(platform("androidx.compose:compose-bom:2025.09.01")) // Compose BOM
-    implementation("com.auth0.android:auth0:2.0.0") // Example: replace with the actual Auth0 SDK
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

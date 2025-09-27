@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.Button
 import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Tab
+
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -32,10 +32,11 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 
 @Composable
-fun SignUp(navController: NavController) {
+fun SignUp(navController: NavController,viewModel: TaskViewModel= viewModel()) {
     var name by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
@@ -46,7 +47,7 @@ fun SignUp(navController: NavController) {
     var nameError by rememberSaveable { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
-    val viewModel= TaskViewModel()
+
 
     Column(
         modifier = Modifier.fillMaxSize(),
