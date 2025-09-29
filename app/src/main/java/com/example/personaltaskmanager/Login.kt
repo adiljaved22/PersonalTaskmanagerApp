@@ -123,7 +123,8 @@ fun Login(
                     else -> ""
                 }
                 if (emailError.isEmpty() && passwordError.isEmpty()) {
-                     viewModel.login(email,password)
+                    viewModel.login(email, password, navController)
+
                 } else {
                     Toast.makeText(context, "Login Unsuccessful", Toast.LENGTH_LONG).show()
                 }

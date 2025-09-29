@@ -36,6 +36,7 @@ fun Navigation(viewModel: TaskViewModel = viewModel()) {
             HomeScreen(
                 NavigateToTask = { navController.navigate("Task") },
                 NavigateToEvents = { navController.navigate("Events") },
+                navController = navController,
                 onBack = {
                     navController.navigate("login") {
                         popUpTo(0) {
@@ -45,14 +46,14 @@ fun Navigation(viewModel: TaskViewModel = viewModel()) {
                     }
 
                 },
-                logout = {
+              /*  logout = {
                     navController.navigate("login") {
                         popUpTo(0) {
                             inclusive = true
                         }
                         launchSingleTop = true
                     }
-                }
+                }*/
 
 
             )
@@ -100,6 +101,18 @@ fun Navigation(viewModel: TaskViewModel = viewModel()) {
                     }
                 },
                 onBackClick = { navController.popBackStack() })
+        }
+        composable("ProfileScreen"){
+            ProfileScreen(
+                logout = {
+                       navController.navigate("login") {
+                           popUpTo(0) {
+                               inclusive = true
+                           }
+                           launchSingleTop = true
+                       }
+                   }
+            )
         }
         composable("AddEvents") {
             AddEvents(

@@ -1,12 +1,23 @@
 package com.example.personaltaskmanager
 
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Button
 import androidx.compose.material.OutlinedTextField
 
@@ -24,8 +35,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.Color.Companion.Unspecified
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -34,9 +48,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 
 @Composable
-fun SignUp(navController: NavController,viewModel: TaskViewModel= viewModel()) {
+fun SignUp(navController: NavController, viewModel: TaskViewModel = viewModel()) {
     var name by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
@@ -47,7 +62,20 @@ fun SignUp(navController: NavController,viewModel: TaskViewModel= viewModel()) {
     var nameError by rememberSaveable { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
+    var selectedImage by remember { mutableStateOf<Uri?>(null) }
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        selectedImage = uri
+        if (uri != null) {
+            context.contentResolver.takePersistableUriPermission(
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+        }
 
+
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -58,6 +86,33 @@ fun SignUp(navController: NavController,viewModel: TaskViewModel= viewModel()) {
         Spacer(modifier = Modifier.height(8.dp))
         Text("Create a new account", fontSize = 16.sp)
         Spacer(modifier = Modifier.height(8.dp))
+        Box(
+            modifier = Modifier
+                .size(120.dp)
+                .clip(CircleShape)
+                .background(Color.Gray)
+                .clickable {
+                    launcher.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    )
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            if (selectedImage != null) {
+                Image(
+                    painter = rememberAsyncImagePainter(selectedImage),
+                    contentDescription = "Profile Image",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                androidx.compose.material3.Text("Add Photo", color = Color.White)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = name,
             onValueChange = { name = it },
@@ -144,7 +199,7 @@ fun SignUp(navController: NavController,viewModel: TaskViewModel= viewModel()) {
         Button(
             modifier = Modifier.fillMaxWidth(),
             onClick = {
-            viewModel.SignUp(name,email,password)
+                viewModel.SignUp(name, email, password)
                 nameError = when {
                     name.isBlank() -> "Name is required"
                     else -> ""

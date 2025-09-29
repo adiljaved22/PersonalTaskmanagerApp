@@ -1,11 +1,16 @@
 package com.example.personaltaskmanager
 
+import android.app.Application
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import kotlinx.coroutines.delay
@@ -275,10 +280,11 @@ import kotlin.String
 
 
 }*/
-class TaskViewModel(private val context: Context) : ViewModel() {
+class TaskViewModel( application: Application) : AndroidViewModel(application) {
 
     // Retrofit services with AuthInterceptor
-    private val services = RetrofitInstance.getApiServices(context)
+    private val context=getApplication<Application>().applicationContext
+    private val services= RetrofitInstance.getApiServices(context)
 
     private val _pendingTasks = MutableStateFlow<List<Task>>(emptyList())
     val pendingTask: StateFlow<List<Task>> = _pendingTasks
@@ -374,10 +380,10 @@ class TaskViewModel(private val context: Context) : ViewModel() {
                     event_name = name,
                     location = location,
                     event_date = date,
-                    event_time = time, // ensure HH:mm:ss
+                    event_time = time,
 
 
-                )
+                    )
                 val response = services.createEvent(newevent)
                 if (response.isSuccessful) {
                     loadEvents()
@@ -483,14 +489,17 @@ class TaskViewModel(private val context: Context) : ViewModel() {
 
     }
 
-    fun login(email: String, password: String) {
+    fun login(email: String, password: String,navcontroller: NavController) {
+
+        val context = getApplication<Application>().applicationContext
         viewModelScope.launch {
             try {
                 val response = services.login(email, password)
+
                 if (response.isSuccessful) {
+
                     val token = response.body()?.token
                     if (!token.isNullOrEmpty()) {
-
                         val masterKey = MasterKey.Builder(context)
                             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
                             .build()
@@ -502,14 +511,18 @@ class TaskViewModel(private val context: Context) : ViewModel() {
                             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
                         )
                         sharedPreferences.edit().putString("access_token", token).apply()
-                       Toast.makeText(
+                        Toast.makeText(
+
+
                             context,
                             "Login Successful",
-                       Toast.LENGTH_LONG
+                            Toast.LENGTH_LONG
                         ).show()
+                        navcontroller.navigate("home")
+
                     }
                 } else {
-                 Toast.makeText(
+                    Toast.makeText(
                         context,
                         "Invalid email or password",
                         Toast.LENGTH_LONG
@@ -520,9 +533,4 @@ class TaskViewModel(private val context: Context) : ViewModel() {
             }
         }
     }
-
-
 }
-
-
-
