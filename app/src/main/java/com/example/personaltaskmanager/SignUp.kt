@@ -108,7 +108,7 @@ fun SignUp(navController: NavController, viewModel: TaskViewModel = viewModel())
                     contentScale = ContentScale.Crop
                 )
             } else {
-                androidx.compose.material3.Text("Add Photo", color = Color.White)
+               Text("Add Photo", color = Color.White)
             }
         }
 
@@ -199,7 +199,7 @@ fun SignUp(navController: NavController, viewModel: TaskViewModel = viewModel())
         Button(
             modifier = Modifier.fillMaxWidth(),
             onClick = {
-                viewModel.SignUp(name, email, password)
+              /*  viewModel.SignUp()*/
                 nameError = when {
                     name.isBlank() -> "Name is required"
                     else -> ""

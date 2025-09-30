@@ -25,13 +25,15 @@ data class Events(
     val event_time: String
 )
 data class User(
+
     val username:String,
     val email:String,
-    val password:String
-
+    val password:String,
+    val imageUrl: String? = null
 )
 
 data class Login(
     val email:String,
-    val password: String
+    val password: String,
+
 )

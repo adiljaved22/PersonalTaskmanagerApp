@@ -17,6 +17,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -280,11 +282,11 @@ import kotlin.String
 
 
 }*/
-class TaskViewModel( application: Application) : AndroidViewModel(application) {
+class TaskViewModel(application: Application) : AndroidViewModel(application) {
 
     // Retrofit services with AuthInterceptor
-    private val context=getApplication<Application>().applicationContext
-    private val services= RetrofitInstance.getApiServices(context)
+    private val context = getApplication<Application>().applicationContext
+    private val services = RetrofitInstance.getApiServices(context)
 
     private val _pendingTasks = MutableStateFlow<List<Task>>(emptyList())
     val pendingTask: StateFlow<List<Task>> = _pendingTasks
@@ -470,13 +472,22 @@ class TaskViewModel( application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun SignUp(Name: String, Email: String, Password: String) {
+    fun SignUp(
+        image: MultipartBody.Part,
+        username: RequestBody,
+        email: RequestBody,
+        password: RequestBody
+    ) {
         viewModelScope.launch {
             try {
 
 
-                val new = User(username = Name, email = Email, password = Password)
-                val response = services.signUp(new)
+                val response = services.SignUp(
+                    imageurl = image,
+                    username = username,
+                    email = email,
+                    password = password
+                )
                 if (response.isSuccessful) {
                     println("success")
                 } else {
@@ -489,7 +500,7 @@ class TaskViewModel( application: Application) : AndroidViewModel(application) {
 
     }
 
-    fun login(email: String, password: String,navcontroller: NavController) {
+    fun login(email: String, password: String, navcontroller: NavController) {
 
         val context = getApplication<Application>().applicationContext
         viewModelScope.launch {

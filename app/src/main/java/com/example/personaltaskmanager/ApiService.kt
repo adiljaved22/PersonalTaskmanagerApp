@@ -1,8 +1,13 @@
 package com.example.personaltaskmanager
 
 import android.content.Context
+import android.media.Image
 import com.google.gson.annotations.SerializedName
+import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
+import okhttp3.RequestBody
+import okhttp3.internal.platform.android.AndroidLogHandler.setLevel
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -12,19 +17,27 @@ import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
-object RetrofitInstance {
 
+object RetrofitInstance {
+    private const val BASE_URL = "http://192.168.0.181:8000/"
+    private val loggingInterceptor = HttpLoggingInterceptor().apply {
+        setLevel(HttpLoggingInterceptor.Level.BODY)
+    }
+    private val okHttpClients = OkHttpClient.Builder().addInterceptor(loggingInterceptor).build()
     fun getApiServices(context: Context): ApiServices {
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(AuthInterceptor(context))
             .build()
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.0.181:6000/")
+            .baseUrl(BASE_URL)
+            .client(okHttpClients)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -68,8 +81,8 @@ object RetrofitInstance {
             @Body() request: Events
         ): retrofit2.Response<Events>
 
-        @POST("user/sign_up")
-        suspend fun signUp(@Body request: User): retrofit2.Response<User>
+        /*   @POST("user/sign_up")
+           suspend fun signUp(@Body request: User): retrofit2.Response<User>*/
 
         @FormUrlEncoded
         @POST("login")
@@ -82,5 +95,14 @@ object RetrofitInstance {
             @SerializedName("access_token") val token: String,
             @SerializedName("token_type") val token_type: String
         )
+
+        @Multipart
+        @POST("user/sign_up")
+        suspend fun SignUp(
+            @Part imageurl: MultipartBody.Part,
+            @Part("username") username: RequestBody,
+            @Part("email") email: RequestBody,
+            @Part("password") password: RequestBody
+        ): Response<User>
     }
 }
