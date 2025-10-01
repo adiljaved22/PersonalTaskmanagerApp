@@ -476,33 +476,41 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
         image: MultipartBody.Part,
         username: RequestBody,
         email: RequestBody,
-        password: RequestBody
-    ) {
+        password: RequestBody,
 
-        Log.d("image","image.toString()")
+        ): Boolean {
+        Log.d("image", "image.toString()")
+        var isSignup = false
         viewModelScope.launch {
             try {
-
-                Log.d("image","image aa gai")
-
+                Log.d("image", "image aa gai")
                 val response = services.SignUp(
                     image,
                     username,
                     email,
                     password
-                )
-                Log.d("image","")
 
+                )
+                Log.d("image", "Image added successfully")
                 if (response.isSuccessful) {
-                 Log.d("success", "success working")
+                    Log.d("success", "${response.code()}, ${response.message()}")
+
+                    isSignup = true
                 } else {
-                   Log.e("fail","not working")
+                    Log.e("fail", "not working")
+                    Log.d("failure", "${response.code()}, ${response.message()}")
+
+                    isSignup = false
                 }
             } catch (e: Exception) {
+                Log.e("fail", "nothin working")
+                Log.d("success", ", ${e.message}")
+
                 println("$e")
+                isSignup = false
             }
         }
-
+        return isSignup
     }
 
     fun login(email: String, password: String, navcontroller: NavController) {

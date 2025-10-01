@@ -12,7 +12,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 fun prepareFilePart(uri: Uri, context: Context): MultipartBody.Part {
     val inputStream = context.contentResolver.openInputStream(uri)!!
-    val file = File(context.cacheDir, "temp_image.jpg")
+    val file = File(context.cacheDir, inputStream.toString())
     file.outputStream().use { outputStream ->
         inputStream.copyTo(outputStream)
     }

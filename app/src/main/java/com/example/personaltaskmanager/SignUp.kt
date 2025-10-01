@@ -1,8 +1,10 @@
 package com.example.personaltaskmanager
+
 import com.example.personaltaskmanager.utils.prepareFilePart
 import com.example.personaltaskmanager.utils.toRequestBody
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -100,17 +102,21 @@ fun SignUp(navController: NavController, viewModel: TaskViewModel = viewModel())
                 },
             contentAlignment = Alignment.Center
         ) {
+
             if (selectedImage != null) {
+                Log.e("imade added", "$selectedImage")
                 Image(
                     painter = rememberAsyncImagePainter(selectedImage),
+
                     contentDescription = "Profile Image",
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
+
             } else {
-               Text("Add Photo", color = Color.White)
+                Text("Add Photo", color = Color.White)
             }
         }
 
@@ -201,13 +207,7 @@ fun SignUp(navController: NavController, viewModel: TaskViewModel = viewModel())
         Button(
             modifier = Modifier.fillMaxWidth(),
             onClick = {
-          if (selectedImage != null) {
-              val imagePart= prepareFilePart(selectedImage!!, context)
-              val namePart = name.toRequestBody()
-              val emailPart = email.toRequestBody()
-              val passwordPart = password.toRequestBody()
-              viewModel.SignUp(imagePart, namePart, emailPart, passwordPart)
-          }
+
                 nameError = when {
                     name.isBlank() -> "Name is required"
                     else -> ""
@@ -228,20 +228,40 @@ fun SignUp(navController: NavController, viewModel: TaskViewModel = viewModel())
                     else -> ""
                 }
 
-                if (nameError.isEmpty() && emailError.isEmpty() && passwordError.isEmpty() && confirmPasswordError.isEmpty()) {
-                    Toast.makeText(context, "Sign Up Successful", Toast.LENGTH_LONG).show()
-                    navController.popBackStack()
+
+                if (nameError.isEmpty() && emailError.isEmpty() && passwordError.isEmpty()
+                    && confirmPasswordError.isEmpty() && selectedImage != null
+                ) {
+                    val imagePart = prepareFilePart(selectedImage!!, context)
+                    val namePart = name.toRequestBody()
+                    val emailPart = email.toRequestBody()
+                    val passwordPart = password.toRequestBody()
+                    if (
+                        viewModel.SignUp(
+                            imagePart, namePart,
+                            emailPart, passwordPart
+                        )
+                    ) {
+                        Toast.makeText(context, "Sign Up Successful", Toast.LENGTH_LONG).show()
+                        navController.popBackStack()
+
+                    } else {
+                        Toast.makeText(context, "Sign Up Unsuccessful", Toast.LENGTH_LONG).show()
+                    }
                 } else {
-                    Toast.makeText(context, "Sign Up Unsuccessful", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "TextField never be empty", Toast.LENGTH_LONG).show()
                 }
 
 
             }) {
             Text("Sign Up")
         }
-
     }
 
-
 }
+
+
+
+
+
 
