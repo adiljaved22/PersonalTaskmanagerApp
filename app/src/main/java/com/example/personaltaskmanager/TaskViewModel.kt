@@ -478,20 +478,25 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
         email: RequestBody,
         password: RequestBody
     ) {
+
+        Log.d("image","image.toString()")
         viewModelScope.launch {
             try {
 
+                Log.d("image","image aa gai")
 
                 val response = services.SignUp(
-                    imageurl = image,
-                    username = username,
-                    email = email,
-                    password = password
+                    image,
+                    username,
+                    email,
+                    password
                 )
+                Log.d("image","")
+
                 if (response.isSuccessful) {
-                    println("success")
+                 Log.d("success", "success working")
                 } else {
-                    println("fail")
+                   Log.e("fail","not working")
                 }
             } catch (e: Exception) {
                 println("$e")
@@ -545,3 +550,8 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 }
+
+
+
+
+

@@ -25,7 +25,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 object RetrofitInstance {
-    private const val BASE_URL = "http://192.168.0.181:8000/"
+    private const val BASE_URL = "http://192.168.0.181:9000/"
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         setLevel(HttpLoggingInterceptor.Level.BODY)
     }

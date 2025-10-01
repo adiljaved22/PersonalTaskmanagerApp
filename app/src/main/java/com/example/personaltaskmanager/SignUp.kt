@@ -1,5 +1,6 @@
 package com.example.personaltaskmanager
-
+import com.example.personaltaskmanager.utils.prepareFilePart
+import com.example.personaltaskmanager.utils.toRequestBody
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
@@ -49,6 +50,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+
 
 @Composable
 fun SignUp(navController: NavController, viewModel: TaskViewModel = viewModel()) {
@@ -199,7 +201,13 @@ fun SignUp(navController: NavController, viewModel: TaskViewModel = viewModel())
         Button(
             modifier = Modifier.fillMaxWidth(),
             onClick = {
-              /*  viewModel.SignUp()*/
+          if (selectedImage != null) {
+              val imagePart= prepareFilePart(selectedImage!!, context)
+              val namePart = name.toRequestBody()
+              val emailPart = email.toRequestBody()
+              val passwordPart = password.toRequestBody()
+              viewModel.SignUp(imagePart, namePart, emailPart, passwordPart)
+          }
                 nameError = when {
                     name.isBlank() -> "Name is required"
                     else -> ""
