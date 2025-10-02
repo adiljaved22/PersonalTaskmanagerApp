@@ -29,7 +29,7 @@ data class User(
     val username:String,
     val email:String,
     val password:String,
-    val imageUrl: String? = null
+    val profile_image: String? = null
 )
 
 data class Login(

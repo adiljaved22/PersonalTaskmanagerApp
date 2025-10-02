@@ -10,14 +10,16 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
+
 fun prepareFilePart(uri: Uri, context: Context): MultipartBody.Part {
     val inputStream = context.contentResolver.openInputStream(uri)!!
-    val file = File(context.cacheDir, inputStream.toString())
+    val fileName = "upload_ ${System.currentTimeMillis()}.jpg"
+    val file = File(context.cacheDir, fileName)
     file.outputStream().use { outputStream ->
         inputStream.copyTo(outputStream)
     }
     val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
-    return MultipartBody.Part.createFormData("imageurl", file.name, requestFile)
+    return MultipartBody.Part.createFormData("profile_image", file.name, requestFile)
 }
 
 fun String.toRequestBody(): RequestBody =

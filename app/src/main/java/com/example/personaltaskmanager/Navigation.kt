@@ -1,7 +1,9 @@
 
 package com.example.personaltaskmanager
 
+import android.content.SharedPreferences
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.window.Popup
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -9,6 +11,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 
 @Composable
 fun Navigation(viewModel: TaskViewModel = viewModel()) {
@@ -102,16 +106,27 @@ fun Navigation(viewModel: TaskViewModel = viewModel()) {
                 },
                 onBackClick = { navController.popBackStack() })
         }
-        composable("ProfileScreen"){
+        composable("ProfileScreen") {
+         /*   val context = LocalContext.current
+            val masterKey = MasterKey.Builder(context)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+            val sharedPreferences = EncryptedSharedPreferences.create(
+                context,
+                "secure_prefs",
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )*/
+
             ProfileScreen(
+             /*   sharedPreferences = sharedPreferences,*/
                 logout = {
-                       navController.navigate("login") {
-                           popUpTo(0) {
-                               inclusive = true
-                           }
-                           launchSingleTop = true
-                       }
-                   }
+                    navController.navigate("login") {
+                        popUpTo(0) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
             )
         }
         composable("AddEvents") {

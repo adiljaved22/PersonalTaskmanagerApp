@@ -300,16 +300,19 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
     private val _pastEvent = MutableStateFlow<List<Events>>(emptyList())
     val pastEvent: StateFlow<List<Events>> = _pastEvent
 
+
     init {
-        loadTasks()
-        loadEvents()
+/*        loadTasks()
+        loadEvents()*/
         startAutoRefreshEvents()
     }
 
     fun loadTasks() {
         viewModelScope.launch {
+            val tasks = services.getTasks()
             try {
-                val tasks = services.getTasks()
+
+
                 _pendingTasks.value = tasks.filter { !it.completed }
                 _completedTasks.value = tasks.filter { it.completed }
             } catch (e: Exception) {
@@ -320,10 +323,12 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
 
     fun loadEvents() {
         viewModelScope.launch {
+            val events = services.getEvents()
             try {
+
                 val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
                 val currentDateTime = Date()
-                val events = services.getEvents()
+
 
                 val coming = events.filter {
                     val dateTimeString = "${it.event_date} ${it.event_time}"
@@ -535,6 +540,19 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
                         )
                         sharedPreferences.edit().putString("access_token", token).apply()
+                      /*  val username = response.body()?.username
+                        if (!username.isNullOrEmpty()) {
+                      val masterKey = MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
+                            val sharedPreferences = EncryptedSharedPreferences.create(
+                                context,
+                                "secure_prefs",
+                                masterKey,
+                                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                            )
+                            sharedPreferences.edit().putString("username", username).apply()
+
+                        }*/
                         Toast.makeText(
 
 

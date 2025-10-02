@@ -25,7 +25,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 object RetrofitInstance {
-    private const val BASE_URL = "http://192.168.0.181:9000/"
+    private const val BASE_URL = "http://192.168.0.181:8000/"
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         setLevel(HttpLoggingInterceptor.Level.BODY)
     }
@@ -93,13 +93,16 @@ object RetrofitInstance {
 
         data class TokenResponse(
             @SerializedName("access_token") val token: String,
-            @SerializedName("token_type") val token_type: String
+            @SerializedName("token_type") val token_type: String,
+          /*  @SerializedName("username") val username: String,
+            @SerializedName("email") val email: String,
+            @SerializedName("profile_image") val profile_image: String*/
         )
 
         @Multipart
         @POST("user/sign_up")
         suspend fun SignUp(
-            @Part imageurl: MultipartBody.Part,
+            @Part profile_image: MultipartBody.Part,
             @Part("username") username: RequestBody,
             @Part("email") email: RequestBody,
             @Part("password") password: RequestBody

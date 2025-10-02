@@ -16,12 +16,25 @@ class AuthInterceptor(private val context: Context) : Interceptor {
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
+        /*val sharedPreference=EncryptedSharedPreferences.create(
+            context,
+            "secure_pref",
+            MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build(),
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )*/
         val token = sharedPreferences.getString("access_token", null)
         val requestbuilder = chain.request().newBuilder()
             token?.let {
             requestbuilder.addHeader("Authorization", "Bearer $it")
         }
+     /*   val username=sharedPreference.getString("username",null)
+        val request=chain.request().newBuilder()
+        username?.let {
+            request.addHeader("username",it)
+        }*/
         return chain.proceed(requestbuilder.build())
+
 
 
     }

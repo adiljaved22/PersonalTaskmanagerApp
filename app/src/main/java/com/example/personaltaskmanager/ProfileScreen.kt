@@ -1,5 +1,6 @@
 package com.example.personaltaskmanager
 
+import android.content.SharedPreferences
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,7 +20,9 @@ import coil.compose.rememberAsyncImagePainter
 
 @Composable
 
-fun ProfileScreen( logout:()->Unit) {
+fun ProfileScreen( /*sharedPreferences: SharedPreferences,*/ logout:()->Unit) {
+    /*val user = sharedPreferences.getString("user", "")?:"No name"*/
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -28,6 +31,7 @@ fun ProfileScreen( logout:()->Unit) {
         verticalArrangement = Arrangement.Center
     )
     {
+   /*   Text(text = "Welcome $user")*/
      /*   Image(
             painter = rememberAsyncImagePainter(user?.imageUri),
             contentDescription = "Profile Image",
