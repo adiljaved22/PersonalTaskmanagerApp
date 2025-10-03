@@ -189,6 +189,7 @@ fun EventsScreen(
                                                 Text("Time: ${task.event_time}")
                                             }
                                             IconButton(onClick = {
+
                                                 navController.navigate("Edit/${task.id}")
                                             }) {
                                                 Icon(

@@ -301,11 +301,10 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
     val pastEvent: StateFlow<List<Events>> = _pastEvent
 
 
-    init {
-/*        loadTasks()
-        loadEvents()*/
-        startAutoRefreshEvents()
-    }
+init {
+    loadEvents()
+    loadTasks()
+}
 
     fun loadTasks() {
         viewModelScope.launch {
@@ -526,9 +525,11 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                 val response = services.login(email, password)
 
                 if (response.isSuccessful) {
-
+                Log.d("resposnse","$response")
                     val token = response.body()?.token
+                    Log.d("token", "$token")
                     if (!token.isNullOrEmpty()) {
+                        Log.d("token", "$token")
                         val masterKey = MasterKey.Builder(context)
                             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
                             .build()
@@ -564,6 +565,7 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
 
                     }
                 } else {
+                    Log.d("nothing happens","lol")
                     Toast.makeText(
                         context,
                         "Invalid email or password",

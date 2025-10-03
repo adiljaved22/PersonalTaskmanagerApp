@@ -1,6 +1,7 @@
 package com.example.personaltaskmanager
 
 import android.content.Context
+import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 
@@ -9,6 +10,7 @@ import okhttp3.Response
 
 class AuthInterceptor(private val context: Context) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
+
         val sharedPreferences = EncryptedSharedPreferences.create(
             context,
             "secure_prefs",
@@ -16,6 +18,7 @@ class AuthInterceptor(private val context: Context) : Interceptor {
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
+
         /*val sharedPreference=EncryptedSharedPreferences.create(
             context,
             "secure_pref",
@@ -24,10 +27,12 @@ class AuthInterceptor(private val context: Context) : Interceptor {
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )*/
         val token = sharedPreferences.getString("access_token", null)
+        Log.d("AuthInterceptor", "Token: $token")
         val requestbuilder = chain.request().newBuilder()
             token?.let {
             requestbuilder.addHeader("Authorization", "Bearer $it")
         }
+        Log.d("AuthInterceptor", "Request: $requestbuilder")
      /*   val username=sharedPreference.getString("username",null)
         val request=chain.request().newBuilder()
         username?.let {
