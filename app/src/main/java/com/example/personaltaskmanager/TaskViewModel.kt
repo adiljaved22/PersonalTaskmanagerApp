@@ -300,11 +300,11 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
     private val _pastEvent = MutableStateFlow<List<Events>>(emptyList())
     val pastEvent: StateFlow<List<Events>> = _pastEvent
 
-
-init {
-    loadEvents()
-    loadTasks()
-}
+    /*
+    init {
+        loadEvents()
+        loadTasks()
+    }*/
 
     fun loadTasks() {
         viewModelScope.launch {
@@ -525,10 +525,16 @@ init {
                 val response = services.login(email, password)
 
                 if (response.isSuccessful) {
-                Log.d("resposnse","$response")
+                    Log.d("response", "$response")
                     val token = response.body()?.token
                     Log.d("token", "$token")
+
                     if (!token.isNullOrEmpty()) {
+                        Toast.makeText(
+                            context,
+                            "Token Found",
+                            Toast.LENGTH_LONG
+                        ).show()
                         Log.d("token", "$token")
                         val masterKey = MasterKey.Builder(context)
                             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
@@ -541,19 +547,7 @@ init {
                             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
                         )
                         sharedPreferences.edit().putString("access_token", token).apply()
-                      /*  val username = response.body()?.username
-                        if (!username.isNullOrEmpty()) {
-                      val masterKey = MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
-                            val sharedPreferences = EncryptedSharedPreferences.create(
-                                context,
-                                "secure_prefs",
-                                masterKey,
-                                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-                            )
-                            sharedPreferences.edit().putString("username", username).apply()
 
-                        }*/
                         Toast.makeText(
 
 
@@ -563,15 +557,85 @@ init {
                         ).show()
                         navcontroller.navigate("home")
 
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "TOKEN NOT FOUND",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
+                    val username = response.body()?.user?.username
+                    Log.d("username", "$username")
+                    if (!username.isNullOrEmpty()) {
+                        Log.d("username", "$username")
+                        val masterKey = MasterKey.Builder(context)
+                            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
+                        val sharedPreferences = EncryptedSharedPreferences.create(
+                            context,
+                            "secure_prefs",
+                            masterKey,
+                            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                        )
+                        sharedPreferences.edit().putString("username", username).apply()
+
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "USERNAME NOT FOUND",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+
+
+                    val email = response.body()?.user?.email
+                    if (!email.isNullOrEmpty()) {
+                        val masterKey = MasterKey.Builder(context)
+                            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
+                        val sharedPreferences = EncryptedSharedPreferences.create(
+                            context,
+                            "secure_prefs",
+                            masterKey,
+                            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                        )
+                        sharedPreferences.edit().putString("email", email).apply()
+                    }
+                    else {
+                        Toast.makeText(
+                            context,
+                            "EMAIL NOT FOUND",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    val profile_image = response.body()?.user?.profile_image
+
+                        if (!profile_image.isNullOrEmpty())
+                        {
+                            Log.d("profile pix","$profile_image")
+                            val masterKey = MasterKey.Builder(context)
+                                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
+                            val sharedPreferences = EncryptedSharedPreferences.create(
+                                context,
+                                "secure_prefs",
+                                masterKey,
+                                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                            )
+                            sharedPreferences.edit().putString("profile_image", profile_image).apply()
+                        }
+                        else{
+                            Log.d("profile","profile image not found")
+                        }
                 } else {
-                    Log.d("nothing happens","lol")
+
                     Toast.makeText(
                         context,
                         "Invalid email or password",
                         Toast.LENGTH_LONG
                     ).show()
                 }
+
             } catch (e: Exception) {
                 e.printStackTrace()
             }

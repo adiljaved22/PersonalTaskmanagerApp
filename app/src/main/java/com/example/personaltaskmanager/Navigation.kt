@@ -50,14 +50,14 @@ fun Navigation(viewModel: TaskViewModel = viewModel()) {
                     }
 
                 },
-              /*  logout = {
-                    navController.navigate("login") {
-                        popUpTo(0) {
-                            inclusive = true
-                        }
-                        launchSingleTop = true
-                    }
-                }*/
+                /*  logout = {
+                      navController.navigate("login") {
+                          popUpTo(0) {
+                              inclusive = true
+                          }
+                          launchSingleTop = true
+                      }
+                  }*/
 
 
             )
@@ -107,20 +107,10 @@ fun Navigation(viewModel: TaskViewModel = viewModel()) {
                 onBackClick = { navController.popBackStack() })
         }
         composable("ProfileScreen") {
-         /*   val context = LocalContext.current
-            val masterKey = MasterKey.Builder(context)
-                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                .build()
-            val sharedPreferences = EncryptedSharedPreferences.create(
-                context,
-                "secure_prefs",
-                masterKey,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            )*/
+
 
             ProfileScreen(
-             /*   sharedPreferences = sharedPreferences,*/
+                context = LocalContext.current,
                 logout = {
                     navController.navigate("login") {
                         popUpTo(0) { inclusive = true }
