@@ -236,17 +236,13 @@ fun SignUp(navController: NavController, viewModel: TaskViewModel = viewModel())
                     val namePart = name.toRequestBody()
                     val emailPart = email.toRequestBody()
                     val passwordPart = password.toRequestBody()
-                    if (
-                        viewModel.SignUp(
-                            imagePart, namePart,
-                            emailPart, passwordPart
-                        )
-                    ) {
-                        Toast.makeText(context, "Sign Up Successful", Toast.LENGTH_LONG).show()
-                        navController.popBackStack()
-
-                    } else {
-                        Toast.makeText(context, "Sign Up Unsuccessful", Toast.LENGTH_LONG).show()
+                    viewModel.SignUp(imagePart, namePart, emailPart, passwordPart) { success ->
+                        if (success) {
+                            Toast.makeText(context, "Sign Up Successful", Toast.LENGTH_LONG).show()
+                            navController.popBackStack()
+                        } else {
+                            Toast.makeText(context, "Sign Up Unsuccessful", Toast.LENGTH_LONG).show()
+                        }
                     }
                 } else {
                     Toast.makeText(context, "TextField never be empty", Toast.LENGTH_LONG).show()

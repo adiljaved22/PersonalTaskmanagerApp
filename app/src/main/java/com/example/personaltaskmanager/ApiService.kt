@@ -25,19 +25,18 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 object RetrofitInstance {
-    private const val BASE_URL = "http://192.168.0.181:9000/"
+    private const val BASE_URL = "http://192.168.0.181:8000/"
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         setLevel(HttpLoggingInterceptor.Level.BODY)
     }
-    private val okHttpClients = OkHttpClient.Builder().addInterceptor(loggingInterceptor).build()
+
     fun getApiServices(context: Context): ApiServices {
         val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor(context))
-            .build()
+            .addInterceptor(AuthInterceptor(context)).addInterceptor(loggingInterceptor).build()
+
 
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .client(okHttpClients)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -81,8 +80,6 @@ object RetrofitInstance {
             @Body() request: Events
         ): retrofit2.Response<Events>
 
-        /*   @POST("user/sign_up")
-           suspend fun signUp(@Body request: User): retrofit2.Response<User>*/
 
         @FormUrlEncoded
         @POST("login")

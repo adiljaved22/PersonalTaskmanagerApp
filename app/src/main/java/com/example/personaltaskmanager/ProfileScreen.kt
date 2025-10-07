@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -44,8 +45,8 @@ fun ProfileScreen(context: Context, logout: () -> Unit) {
 
     val username = sharedPreferences.getString("username", "")
     val email = sharedPreferences.getString("email", "")
-    val profile_image=sharedPreferences.getString("profile_image","")
-    Log.d("profile pix","${profile_image}")
+    val profile_image = sharedPreferences.getString("profile_image", "")
+    Log.d("profile pix", "${profile_image}")
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -53,19 +54,27 @@ fun ProfileScreen(context: Context, logout: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+
         Spacer(modifier = Modifier.height(12.dp))
+
+        Text(text = "Username: $username", fontSize = 32.sp, fontWeight = FontWeight.Medium)
+        Spacer(modifier = Modifier.height(12.dp))
+        Log.d("all things", "${profile_image},${username},${email}")
         Image(
+
             painter = rememberAsyncImagePainter(profile_image),
             contentDescription = "Profile Image",
+
             modifier = Modifier
-                .size(200.dp)
+                .size(100.dp)
                 .clip(CircleShape),
             contentScale = ContentScale.Crop
         )
-        Text(text ="Username: $username", fontSize = 32.sp, fontWeight = FontWeight.Medium)
         Spacer(modifier = Modifier.height(12.dp))
         Text(text = "Email: $email", fontSize = 24.sp, fontWeight = FontWeight.Medium)
-        Button(onClick = {
+        Spacer(modifier = Modifier.height(12.dp))
+        Button(
+            shape = RoundedCornerShape(36), onClick = {
             logout()
         }) {
             Text("Logout")
