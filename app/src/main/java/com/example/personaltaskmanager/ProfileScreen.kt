@@ -1,7 +1,6 @@
 package com.example.personaltaskmanager
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -55,23 +54,25 @@ fun ProfileScreen(context: Context, logout: () -> Unit) {
         verticalArrangement = Arrangement.Center
     ) {
 
-        Spacer(modifier = Modifier.height(12.dp))
 
-        Text(text = "Username: $username", fontSize = 32.sp, fontWeight = FontWeight.Medium)
-        Spacer(modifier = Modifier.height(12.dp))
-        Log.d("all things", "${profile_image},${username},${email}")
         Image(
 
             painter = rememberAsyncImagePainter(profile_image),
             contentDescription = "Profile Image",
 
             modifier = Modifier
-                .size(100.dp)
+                .size(200.dp)
                 .clip(CircleShape),
             contentScale = ContentScale.Crop
         )
         Spacer(modifier = Modifier.height(12.dp))
-        Text(text = "Email: $email", fontSize = 24.sp, fontWeight = FontWeight.Medium)
+
+        Text(text = "Username: $username", fontSize =10.sp, fontWeight = FontWeight.Medium)
+        Spacer(modifier = Modifier.height(12.dp))
+        Log.d("all things", "${profile_image},${username},${email}")
+
+        Spacer(modifier = Modifier.height(12.dp))
+        Text(text = "Email: $email", fontSize = 10.sp, fontWeight = FontWeight.Medium)
         Spacer(modifier = Modifier.height(12.dp))
         Button(
             shape = RoundedCornerShape(36), onClick = {

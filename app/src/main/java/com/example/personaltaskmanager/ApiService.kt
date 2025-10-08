@@ -48,7 +48,7 @@ object RetrofitInstance {
     interface ApiServices {
 
         @POST("tasks/create_task")
-        suspend fun createTask(@Body request: Category)
+        suspend fun createTask(@Body request: Category):retrofit2.Response<Task>
 
         @GET("tasks/")
         suspend fun getTasks(): List<Task>

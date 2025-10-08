@@ -300,12 +300,12 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
     private val _pastEvent = MutableStateFlow<List<Events>>(emptyList())
     val pastEvent: StateFlow<List<Events>> = _pastEvent
 
+
     /*
     init {
-        loadEvents()
         loadTasks()
+        loadEvents()
     }*/
-
     fun loadTasks() {
         viewModelScope.launch {
             val tasks = services.getTasks()
@@ -325,7 +325,7 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
             val events = services.getEvents()
             try {
 
-                val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+                val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
                 val currentDateTime = Date()
 
 
@@ -367,9 +367,10 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
             try {
 
                 val newTask = Category(id, title, description, location, comp)
-                services.createTask(newTask)
-                loadTasks()
-
+                val response = services.createTask(newTask)
+                if (response.isSuccessful) {
+                    loadTasks()
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -583,8 +584,7 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
                         )
                         sharedPreferences.edit().putString("email", email).apply()
-                    }
-                    else {
+                    } else {
                         Toast.makeText(
                             context,
                             "EMAIL NOT FOUND",
@@ -593,23 +593,21 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                     }
                     val profile_image = response.body()?.user?.profile_image
 
-                        if (!profile_image.isNullOrEmpty())
-                        {
-                            Log.d("profile pix","$profile_image")
-                            val masterKey = MasterKey.Builder(context)
-                                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
-                            val sharedPreferences = EncryptedSharedPreferences.create(
-                                context,
-                                "secure_prefs",
-                                masterKey,
-                                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-                            )
-                            sharedPreferences.edit().putString("profile_image", profile_image).apply()
-                        }
-                        else{
-                            Log.d("profile","profile image not found")
-                        }
+                    if (!profile_image.isNullOrEmpty()) {
+                        Log.d("profile pix", "$profile_image")
+                        val masterKey = MasterKey.Builder(context)
+                            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
+                        val sharedPreferences = EncryptedSharedPreferences.create(
+                            context,
+                            "secure_prefs",
+                            masterKey,
+                            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                        )
+                        sharedPreferences.edit().putString("profile_image", profile_image).apply()
+                    } else {
+                        Log.d("profile", "profile image not found")
+                    }
                 } else {
 
                     Toast.makeText(
