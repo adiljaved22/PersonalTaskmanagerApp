@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "823991168055",
-    "project_id": "personaltaskmanager-38607",
-    "storage_bucket": "personaltaskmanager-38607.firebasestorage.app"
+    "project_number": "318572430107",
+    "project_id": "personaltaskmanager-a26af",
+    "storage_bucket": "personaltaskmanager-a26af.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:823991168055:android:e813521e6386c11e6ba3b2",
+        "mobilesdk_app_id": "1:318572430107:android:c0da5a5a135d264192c9be",
         "android_client_info": {
           "package_name": "com.example.personaltaskmanager"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBROgia99OoQqACcBr2cVl2ZmHEXW7qNGU"
+          "current_key": "AIzaSyAJ_6oW2HH7rdldK7VHXbPMrJfSeEBt-_w"
         }
       ],
       "services": {
