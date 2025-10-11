@@ -53,7 +53,7 @@ class MyMessagingService : FirebaseMessagingService() {
             NotificationCompat.Builder(this, channelId)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(message.notification?.title)
-                .setContentInfo(message.notification?.body)
+                .setContentText(message.notification?.body)
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent)
                 .build()

@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
                 Navigation()
 
 
-                // 🔹 Firebase token retrieve background me
+              /*  // 🔹 Firebase token retrieve background me
                 LaunchedEffect(Unit) {
                     Firebase.messaging.token.addOnCompleteListener {
                         if (it.isSuccessful) {
@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
                             Log.d("FCM TOKEN", token)
                         }
                     }
-                }
+                }*/
 
 
 

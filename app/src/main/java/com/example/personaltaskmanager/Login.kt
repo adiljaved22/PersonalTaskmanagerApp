@@ -165,6 +165,14 @@ fun Login(
                     else -> ""
                 }
                 if (emailError.isEmpty() && passwordError.isEmpty()) {
+
+                    Firebase.messaging.subscribeToTopic("Tutorial").addOnCompleteListener {
+                        it->
+                        if (it.isSuccessful) {
+                            val FCMtoken = it.result
+                            Log.d("FCM", "$FCMtoken")
+                        }
+                    }
                     viewModel.login(email, password, navController)
 
                 } else {

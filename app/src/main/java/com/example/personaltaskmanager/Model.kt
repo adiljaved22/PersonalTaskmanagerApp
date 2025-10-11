@@ -31,9 +31,7 @@ data class User(
     val password:String,
     val profile_image: String? = null
 )
-
-data class Login(
-    val email:String,
-    val password: String,
-
+data class deviceToken(
+    val token:String?=null
 )
+

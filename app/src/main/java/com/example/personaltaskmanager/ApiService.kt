@@ -46,9 +46,11 @@ object RetrofitInstance {
 
 
     interface ApiServices {
+        @POST("user/save-device-token")
+        suspend fun saveDeviceToken(@Body request: deviceToken): retrofit2.Response<deviceToken>
 
         @POST("tasks/create_task")
-        suspend fun createTask(@Body request: Category):retrofit2.Response<Task>
+        suspend fun createTask(@Body request: Category): retrofit2.Response<Task>
 
         @GET("tasks/")
         suspend fun getTasks(): List<Task>
