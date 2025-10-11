@@ -1,44 +1,43 @@
-
 package com.example.personaltaskmanager
 
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.annotation.RequiresApi
+import androidx.compose.runtime.LaunchedEffect
+import androidx.navigation.compose.rememberNavController
 import com.example.personaltaskmanager.ui.theme.PersonalTaskManagerTheme
+import com.google.firebase.Firebase
+import com.google.firebase.FirebaseApp
+import com.google.firebase.messaging.messaging
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        FirebaseApp.initializeApp(this)
+
         setContent {
-            PersonalTaskManagerTheme{
-                Surface(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .systemBarsPadding()
-                ) {
-                    Navigation()
+            PersonalTaskManagerTheme {
+                Navigation()
+
+
+                // 🔹 Firebase token retrieve background me
+                LaunchedEffect(Unit) {
+                    Firebase.messaging.token.addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            val token = it.result
+                            Log.d("FCM TOKEN", token)
+                        }
+                    }
                 }
+
+
+
             }
         }
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    PersonalTaskManagerTheme {
-
     }
 }

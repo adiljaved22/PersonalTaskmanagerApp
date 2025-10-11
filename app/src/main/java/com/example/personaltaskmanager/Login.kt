@@ -1,7 +1,10 @@
 package com.example.personaltaskmanager
 
 import android.R.attr.text
+import android.os.Build
+import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,6 +23,7 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,15 +42,53 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.personaltaskmanager.FirebaseCloudMessaging.RequestNotificationPermissionDialog
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.firebase.Firebase
+import com.google.firebase.messaging.messaging
 import kotlin.text.isNotEmpty
-
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
+
 fun Login(
     NavigateToLogin: () -> Unit,
     NavigateToSignUp: () -> Unit,
     navController: NavController,
     viewModel: TaskViewModel = viewModel()
 ) {
+    val openDialog = remember { mutableStateOf(false) }
+    val notificationPermissionState =
+        rememberPermissionState(permission = android.Manifest.permission.POST_NOTIFICATIONS)
+
+// Check permission status when screen loads
+    LaunchedEffect(Unit) {
+        if (!notificationPermissionState.status.isGranted &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+        ) {
+       openDialog.value = true
+        } else {
+            // If already granted or not needed (below Android 13), subscribe directly
+            Firebase.messaging.subscribeToTopic("Tutorial")
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Log.d("FCM", "Subscribed to Tutorial topic")
+                    } else {
+                        Log.e("FCM", "Subscription failed", task.exception)
+                    }
+                }
+        }
+    }
+
+// Show permission dialog only if needed
+    if (openDialog.value) {
+        RequestNotificationPermissionDialog(
+            openDialog =openDialog,
+            permissionState = notificationPermissionState
+        )
+    }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var emailError by remember { mutableStateOf("") }

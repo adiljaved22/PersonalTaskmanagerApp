@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    /*    id("com.android.application")*/
+
     id("com.google.gms.google-services")
 }
 
@@ -75,6 +75,7 @@ dependencies {
 
     // (Optional) If you want to use Firebase Analytics for optimal FCM experience
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.accompanist:accompanist-permissions:0.36.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
