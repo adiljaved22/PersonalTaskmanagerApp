@@ -1,4 +1,3 @@
-
 package com.example.personaltaskmanager
 
 data class Category(
@@ -32,6 +31,5 @@ data class User(
     val profile_image: String? = null
 )
 data class deviceToken(
-    val token:String?=null
+    val token:String
 )
-

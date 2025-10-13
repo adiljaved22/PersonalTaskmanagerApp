@@ -45,6 +45,7 @@ fun ProfileScreen(context: Context, logout: () -> Unit) {
     val username = sharedPreferences.getString("username", "")
     val email = sharedPreferences.getString("email", "")
     val profile_image = sharedPreferences.getString("profile_image", "")
+    val sessionManager = SessionManager(context)
     Log.d("profile pix", "${profile_image}")
     Column(
         modifier = Modifier
@@ -76,6 +77,7 @@ fun ProfileScreen(context: Context, logout: () -> Unit) {
         Spacer(modifier = Modifier.height(12.dp))
         Button(
             shape = RoundedCornerShape(36), onClick = {
+                sessionManager.logout()
             logout()
         }) {
             Text("Logout")

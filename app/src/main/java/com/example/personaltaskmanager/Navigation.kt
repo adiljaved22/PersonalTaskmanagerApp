@@ -2,6 +2,8 @@
 package com.example.personaltaskmanager
 
 import android.content.SharedPreferences
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.window.Popup
@@ -14,12 +16,14 @@ import androidx.navigation.navArgument
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun Navigation(viewModel: TaskViewModel = viewModel()) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = "login") {
         composable("login") {
+
             Login(
                 NavigateToLogin = {
                     navController.navigate("Home") {
@@ -46,7 +50,7 @@ fun Navigation(viewModel: TaskViewModel = viewModel()) {
                         popUpTo(0) {
                             inclusive = true
                         }
-                        launchSingleTop=true
+                        launchSingleTop=false
                     }
 
                 },

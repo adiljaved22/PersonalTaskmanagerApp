@@ -214,7 +214,7 @@ fun SignUp(navController: NavController, viewModel: TaskViewModel = viewModel())
                 }
                 emailError = when {
                     email.isBlank() -> "Email is required"
-                    !isValidEmail(email) -> "Invalid Email"
+                   /* !isValidEmail(email) -> "Invalid Email"*/
                     else -> ""
                 }
                 passwordError = when {
@@ -255,9 +255,3 @@ fun SignUp(navController: NavController, viewModel: TaskViewModel = viewModel())
     }
 
 }
-
-
-
-
-
-

@@ -500,7 +500,17 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
-
+    fun deviceToken(deviceToken: deviceToken){
+        viewModelScope.launch {
+            val response = services.saveDeviceToken(deviceToken)
+            if (response.isSuccessful){
+                Log.d("deviceToken","$response")
+            }
+            else {
+                Log.d("device token don't received","${response.code()}")
+            }
+        }
+    }
     fun login(email: String, password: String, navcontroller: NavController) {
 
         val context = getApplication<Application>().applicationContext
@@ -625,8 +635,3 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 }
-
-
-
-
-

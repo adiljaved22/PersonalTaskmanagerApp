@@ -25,15 +25,10 @@ class MainActivity : ComponentActivity() {
                 Navigation()
 
 
-              /*  // 🔹 Firebase token retrieve background me
-                LaunchedEffect(Unit) {
-                    Firebase.messaging.token.addOnCompleteListener {
-                        if (it.isSuccessful) {
-                            val token = it.result
-                            Log.d("FCM TOKEN", token)
-                        }
-                    }
-                }*/
+                /*  // 🔹 Firebase token retrieve background me
+                  LaunchedEffect(Unit) {
+
+                  }*/
 
 
 

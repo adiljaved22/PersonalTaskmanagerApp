@@ -31,8 +31,8 @@ fun HomeScreen(
 ) {
     Row(
         modifier = Modifier
-            .fillMaxSize(),
-        horizontalArrangement = Arrangement.Start
+            .fillMaxSize().padding(top = 20.dp, start = 20.dp,end=20.dp),
+        horizontalArrangement = Arrangement.End
     ) {
         Icon(
             imageVector = Icons.Rounded.PersonOutline,

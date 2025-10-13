@@ -42,6 +42,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.example.personaltaskmanager.FirebaseCloudMessaging.RequestNotificationPermissionDialog
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -49,6 +51,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.google.firebase.Firebase
 import com.google.firebase.messaging.messaging
 import kotlin.text.isNotEmpty
+
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -59,6 +62,14 @@ fun Login(
     navController: NavController,
     viewModel: TaskViewModel = viewModel()
 ) {
+    val context = LocalContext.current
+
+    val sessionManager = SessionManager(context)
+
+    var isLoggedIn by remember { mutableStateOf(sessionManager.isLoggedIn()) }
+
+    Log.e("loginscreen start", "${sessionManager.isLoggedIn()}")
+
     val openDialog = remember { mutableStateOf(false) }
     val notificationPermissionState =
         rememberPermissionState(permission = android.Manifest.permission.POST_NOTIFICATIONS)
@@ -68,7 +79,7 @@ fun Login(
         if (!notificationPermissionState.status.isGranted &&
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
         ) {
-       openDialog.value = true
+            openDialog.value = true
         } else {
             // If already granted or not needed (below Android 13), subscribe directly
             Firebase.messaging.subscribeToTopic("Tutorial")
@@ -85,7 +96,7 @@ fun Login(
 // Show permission dialog only if needed
     if (openDialog.value) {
         RequestNotificationPermissionDialog(
-            openDialog =openDialog,
+            openDialog = openDialog,
             permissionState = notificationPermissionState
         )
     }
@@ -93,107 +104,144 @@ fun Login(
     var password by rememberSaveable { mutableStateOf("") }
     var emailError by remember { mutableStateOf("") }
     var passwordError by remember { mutableStateOf("") }
-    val context = LocalContext.current
+
     var passwordVisible by remember { mutableStateOf(false) }
-    Column(
+    if (sessionManager.isLoggedIn()) {
+        Log.e("loginscreen", "${sessionManager.isLoggedIn()}")
+        print("loginScreen=false")
+        navController.navigate("Home")
+    } else {
+        Column(
 
-        modifier = Modifier
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text("Login", fontSize = 30.sp, fontWeight = FontWeight.Medium)
-        Spacer(modifier = Modifier.height(8.dp))
+            modifier = Modifier
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text("Login", fontSize = 30.sp, fontWeight = FontWeight.Medium)
+            Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = {
-                Text(
-                    text = emailError.ifEmpty { "Email" },
-                    color = if (emailError.isNotEmpty()) Red else Unspecified
-                )
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = {
+                    Text(
+                        text = emailError.ifEmpty { "Email" },
+                        color = if (emailError.isNotEmpty()) Red else Unspecified
+                    )
 
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = {
-                Text(
-                    text = passwordError.ifEmpty { "Password" },
-                    color = if (passwordError.isNotEmpty()) Red else Unspecified
-                )
-
-            },
-            visualTransformation =
-                if (passwordVisible) {
-                    VisualTransformation.None
-
-                } else {
-                    PasswordVisualTransformation('*')
                 },
-            trailingIcon = {
-                val visibilityIcon =
+                modifier = Modifier.fillMaxWidth()
+            )
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = {
+                    Text(
+                        text = passwordError.ifEmpty { "Password" },
+                        color = if (passwordError.isNotEmpty()) Red else Unspecified
+                    )
+
+                },
+                visualTransformation =
                     if (passwordVisible) {
-                        Icons.Filled.Visibility
+                        VisualTransformation.None
+
                     } else {
-                        Icons.Filled.VisibilityOff
-                    }
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    Icon(imageVector = visibilityIcon, contentDescription = null)
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(
-
-            modifier = Modifier.fillMaxWidth(),
-
-            onClick = {
-                emailError = when {
-                    email.isBlank() -> "Email is required"
-                    !isValidEmail(email) -> "Invalid Email"
-                    else -> ""
-                }
-                passwordError = when {
-                    password.isBlank() -> "Password is required"
-                    password.length < 6 -> "Password must be at least 6 characters"
-                    else -> ""
-                }
-                if (emailError.isEmpty() && passwordError.isEmpty()) {
-
-                    Firebase.messaging.subscribeToTopic("Tutorial").addOnCompleteListener {
-                        it->
-                        if (it.isSuccessful) {
-                            val FCMtoken = it.result
-                            Log.d("FCM", "$FCMtoken")
+                        PasswordVisualTransformation('*')
+                    },
+                trailingIcon = {
+                    val visibilityIcon =
+                        if (passwordVisible) {
+                            Icons.Filled.Visibility
+                        } else {
+                            Icons.Filled.VisibilityOff
                         }
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(imageVector = visibilityIcon, contentDescription = null)
                     }
-                    viewModel.login(email, password, navController)
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
 
-                } else {
-                    Toast.makeText(context, "Login Unsuccessful", Toast.LENGTH_LONG).show()
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(
+
+                modifier = Modifier.fillMaxWidth(),
+
+                onClick = {
+                    emailError = when {
+                        email.isBlank() -> "Email is required"
+                    /*    !isValidEmail(email) -> "Invalid Email"*/
+                        else -> ""
+                    }
+                    passwordError = when {
+                        password.isBlank() -> "Password is required"
+                        password.length < 6 -> "Password must be at least 6 characters"
+                        else -> ""
+                    }
+                    if (emailError.isEmpty() && passwordError.isEmpty()) {
+                        // Login call
+                        viewModel.login(email, password, navController)
+                        sessionManager.saveLogin()
+
+                        /*
+                    | Scenario                 | onNewToken() call | SharedPrefs token | Login block        | Firebase.messaging.token call |
+                    | ------------------------ | ----------------- | ----------------- | ------------------ | ----------------------------- |
+                    | First install            | Yes             |  Not yet         | else (fetch token) |  fetch + save + send         |
+                    | App rerun (no reinstall) |  No              |  Already saved   | if (send saved)    |  not called                  |
+                    | Reinstall                |  Yes             |  Not yet         | else (fetch token) |  fetch + save + send         |
+                    */
+
+                        val sharedPreferences = EncryptedSharedPreferences.create(
+                            context, "secure_prefs",
+                            MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                                .build(),
+                            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                        )
+
+                        // Check if token already exists
+                        val savedToken = sharedPreferences.getString("device_token", null)
+                        if (savedToken != null) {
+                            val devtoken = deviceToken(token = savedToken)
+                            viewModel.deviceToken(devtoken)
+                            Log.d("FCM TOKEN", "Sent saved token: $devtoken")
+                        } else {
+                            // Token not generated yet, fetch from Firebase
+                            Firebase.messaging.token.addOnCompleteListener {
+                                if (it.isSuccessful) {
+                                    val devicetoken = it.result
+                                    sharedPreferences.edit().putString("device_token", devicetoken)
+                                        .apply()
+                                    val devtoken = deviceToken(token = devicetoken)
+                                    viewModel.deviceToken(devtoken)
+                                    Log.d("FCM TOKEN", "Fetched new token: $devtoken")
+                                }
+                            }
+                        }
+                    } else {
+                        Toast.makeText(context, "Login Unsuccessful", Toast.LENGTH_LONG).show()
+                    }
                 }
-            }) {
-            Text("Login")
+            ) {
+                Text("Login")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Row {
+                Text("Already have an account? ")
+                Text(
+                    "Sign Up",
+                    color = Color.Blue,
+                    modifier = Modifier.clickable { navController.navigate("SignUp") })
+            }
         }
-        Spacer(modifier = Modifier.height(8.dp))
-        Row {
-            Text("Already have an account? ")
-            Text(
-                "Sign Up",
-                color = Color.Blue,
-                modifier = Modifier.clickable { navController.navigate("SignUp") })
-        }
-    }
 
+    }
 }
 
 
+/*
 fun isValidEmail(email: String): Boolean {
     return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
-}
+}*/

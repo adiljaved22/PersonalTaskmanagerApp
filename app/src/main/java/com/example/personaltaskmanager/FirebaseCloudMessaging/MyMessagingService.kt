@@ -8,8 +8,12 @@ import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.Intent
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.example.personaltaskmanager.MainActivity
 import com.example.personaltaskmanager.R
+import com.example.personaltaskmanager.deviceToken
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import kotlin.random.Random
@@ -17,8 +21,19 @@ import kotlin.random.Random
 const val TAG = "FirebaseMessaging"
 
 class MyMessagingService : FirebaseMessagingService() {
+
     override fun onNewToken(token: String) {
         super.onNewToken(token)
+        val sharedPreferences =
+            EncryptedSharedPreferences.create(
+                this, "secure_prefs", MasterKey.Builder(this).setKeyScheme(
+                    MasterKey.KeyScheme.AES256_GCM
+                ).build(),
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+        sharedPreferences.edit().putString("device_token", token).apply()
+
         Log.d(TAG, "Refreshed Token:$token")
     }
 
