@@ -189,8 +189,7 @@ fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit, onBack
                             as ConnectivityManager
                     val networkInfo = cm.activeNetworkInfo
                     if (networkInfo != null && networkInfo.isConnected) {
-                        val formatedDate = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                        val formatedTime = DateTimeFormatter.ofPattern("HH:mm:ss")
+
                         /* val LocalDate = LocalDate.parse(date, formatedDate)
                          val LocalTime = LocalTime.parse(time, formatedTime)*/
                         viewModel.addEvent(

@@ -13,23 +13,22 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun Navigation(viewModel: TaskViewModel = viewModel()) {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "login") {
-        composable("login") {
+    NavHost(navController = navController, startDestination = "Login") {
+        composable("Login") {
 
             Login(
                 NavigateToLogin = {
                     navController.navigate("Home") {
-                        popUpTo("login") {
+                        popUpTo("Login") {
                             inclusive = true
                         }
+                        launchSingleTop=true
                     }
                 },
 
@@ -42,18 +41,12 @@ fun Navigation(viewModel: TaskViewModel = viewModel()) {
         }
         composable("Home") {
             HomeScreen(
+
                 NavigateToTask = { navController.navigate("Task") },
                 NavigateToEvents = { navController.navigate("Events") },
                 navController = navController,
-                onBack = {
-                    navController.navigate("login") {
-                        popUpTo(0) {
-                            inclusive = true
-                        }
-                        launchSingleTop=false
-                    }
 
-                },
+
                 /*  logout = {
                       navController.navigate("login") {
                           popUpTo(0) {
@@ -76,7 +69,8 @@ fun Navigation(viewModel: TaskViewModel = viewModel()) {
         composable("Events")
         {
             EventsScreen(
-                navController = navController, onBack = {
+                navController = navController,
+                onBack = {
                     navController.popBackStack()
                 },
             )
