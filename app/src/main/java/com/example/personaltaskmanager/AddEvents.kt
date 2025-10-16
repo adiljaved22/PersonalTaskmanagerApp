@@ -1,4 +1,3 @@
-
 package com.example.personaltaskmanager
 
 import android.app.TimePickerDialog
@@ -9,8 +8,10 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -51,6 +52,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit, onBackCLick: () -> Unit) {
@@ -65,12 +67,12 @@ fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit, onBack
     var timeError by remember { mutableStateOf("") }
     val state = rememberDatePickerState()
     var openDialogBox by rememberSaveable { mutableStateOf(false) }
-    var openTimeDialog by  rememberSaveable { mutableStateOf(false) }
-    var showDialog by  rememberSaveable { mutableStateOf(false) }
+    var openTimeDialog by rememberSaveable { mutableStateOf(false) }
+    var showDialog by rememberSaveable { mutableStateOf(false) }
     if (showDialog) {
         InfoDialog(
             title = "Ahhh!!!",
-            desc = "No internet\n Check you internet and try again",
+            desc = "No internet\n Check your internet and try again",
             onDismiss = { showDialog = false }
         )
     } else {
@@ -95,133 +97,136 @@ fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit, onBack
 
 
             }) { paddingValues ->
-            Column(
-                modifier = Modifier.padding(paddingValues),
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
 
-                )
 
-            {
-
-            }
-        }
-        Column(
-
-            modifier = Modifier.fillMaxWidth(1f),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            TextField(
-                modifier = Modifier.fillMaxWidth(0.9f),
-                value = eventName,
-                singleLine = true,
-                onValueChange = { eventName = it },
-                label = {
-                    Text(
-
-                        text = nameError.ifEmpty { "Name" },
-                        color = if (nameError.isNotEmpty()) Red else Unspecified
+                Column(
+                    modifier = Modifier.padding(paddingValues),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
 
                     )
-                })
-            Spacer(modifier = Modifier.height(15.dp))
-            TextField(
-                modifier = Modifier.fillMaxWidth(0.9f),
-                value = eventLocation,
-                singleLine = true,
-                onValueChange = { eventLocation = it },
-                label = {
-                    Text(
-                        text = locationError.ifEmpty { "Location" },
-                        color = if (locationError.isNotEmpty()) Red else Unspecified
-                    )
-                })
-            Spacer(modifier = Modifier.height(15.dp))
-            TextField(
-                value = date,
-                singleLine = true,
-                onValueChange = { date = it },
-                label = {
-                    Text(
-                        text = dateError.ifEmpty { "Date" },
-                        color = if (dateError.isNotEmpty()) Red else Unspecified
-                    )
-                },
-                enabled = false,
-                modifier = Modifier
-                    .fillMaxWidth(0.9f)
-                    .clickable { openDialogBox = true })
-            Spacer(modifier = Modifier.height(15.dp))
-            TextField(
-                value = time,
-                singleLine = true,
-                onValueChange = { time = it },
-                label = {
-                    Text(
-                        text = timeError.ifEmpty { "Time" },
-                        color = if (timeError.isNotEmpty()) Red else Unspecified
-                    )
-                },
-                enabled = false,
-                modifier = Modifier
-                    .fillMaxWidth(0.9f)
-                    .clickable { openTimeDialog = true })
-            Spacer(modifier = Modifier.height(15.dp))
 
-            Button(onClick = {
-                nameError = when {
-                    eventName.isBlank() -> " Enter Name"
-                    else -> ""
-                }
-                locationError = when {
-                    eventLocation.isBlank() -> "Enter Location"
-                    else -> ""
-                }
-                dateError = when {
-                    date.isBlank() -> "Enter Date"
-                    else -> ""
-                }
-                timeError = when {
-                    time.isBlank() -> "Enter Time"
-                    else -> ""
-                }
-                if (eventName.isNotEmpty() && eventLocation.isNotEmpty() && date.isNotEmpty() && time.isNotEmpty()) {
-                    val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE)
-                            as ConnectivityManager
-                    val networkInfo = cm.activeNetworkInfo
-                    if (networkInfo != null && networkInfo.isConnected) {
+                {
+                    TextField(
+                        modifier = Modifier.fillMaxWidth(0.9f),
+                        value = eventName,
+                        singleLine = true,
+                        onValueChange = { eventName = it },
+                        label = {
+                            Text(
 
-                        /* val LocalDate = LocalDate.parse(date, formatedDate)
-                         val LocalTime = LocalTime.parse(time, formatedTime)*/
-                        viewModel.addEvent(
-                            0,
-                            eventName,
-                            eventLocation,
-                            date,
-                            time
+                                text = nameError.ifEmpty { "Name" },
+                                color = if (nameError.isNotEmpty()) Red else Unspecified
 
-                        )
+                            )
+                        })
+                    Spacer(modifier = Modifier.height(15.dp))
+                    TextField(
+                        modifier = Modifier.fillMaxWidth(0.9f),
+                        value = eventLocation,
+                        singleLine = true,
+                        onValueChange = { eventLocation = it },
+                        label = {
+                            Text(
+                                text = locationError.ifEmpty { "Location" },
+                                color = if (locationError.isNotEmpty()) Red else Unspecified
+                            )
+                        })
+                    Spacer(modifier = Modifier.height(15.dp))
+                    TextField(
+                        value = date,
+                        singleLine = true,
+                        onValueChange = { date = it },
+                        label = {
+                            Text(
+                                text = dateError.ifEmpty { "Date" },
+                                color = if (dateError.isNotEmpty()) Red else Unspecified
+                            )
+                        },
+                        enabled = false,
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .clickable { openDialogBox = true })
+                    Spacer(modifier = Modifier.height(15.dp))
+                    TextField(
+                        value = time,
+                        singleLine = true,
+                        onValueChange = { time = it },
+                        label = {
+                            Text(
+                                text = timeError.ifEmpty { "Time" },
+                                color = if (timeError.isNotEmpty()) Red else Unspecified
+                            )
+                        },
+                        enabled = false,
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .clickable { openTimeDialog = true })
+                    Spacer(modifier = Modifier.height(15.dp))
 
-                        onBackCLick()
-                        Toast.makeText(context, "Added Successfully", Toast.LENGTH_LONG).show()
-                    } else {
-                        showDialog = true
+                    Button(onClick = {
+                        nameError = when {
+                            eventName.isBlank() -> " Enter Name"
+                            else -> ""
+                        }
+                        locationError = when {
+                            eventLocation.isBlank() -> "Enter Location"
+                            else -> ""
+                        }
+                        dateError = when {
+                            date.isBlank() -> "Enter Date"
+                            else -> ""
+                        }
+                        timeError = when {
+                            time.isBlank() -> "Enter Time"
+                            else -> ""
+                        }
+                        if (eventName.isNotEmpty() && eventLocation.isNotEmpty() && date.isNotEmpty() && time.isNotEmpty()) {
+                            val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE)
+                                    as ConnectivityManager
+                            val networkInfo = cm.activeNetworkInfo
+                            if (networkInfo != null && networkInfo.isConnected) {
+
+                                /* val LocalDate = LocalDate.parse(date, formatedDate)
+                             val LocalTime = LocalTime.parse(time, formatedTime)*/
+                                viewModel.addEvent(
+                                    0,
+                                    eventName,
+                                    eventLocation,
+                                    date,
+                                    time
+
+                                )
+
+                                onBackCLick()
+                                Toast.makeText(context, "Added Successfully", Toast.LENGTH_LONG)
+                                    .show()
+                            } else {
+                                showDialog = true
+                            }
+                        } else {
+                            Toast.makeText(context, "Fill All the Fields", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+
+
                     }
-                } else {
-                    Toast.makeText(context, "Fill All the Fields", Toast.LENGTH_SHORT)
-                        .show()
+
+                    )
+                    {
+
+                        Text("Add")
+
+                    }
                 }
-
-
-            }
-
-            )
-            {
-
-                Text("Add")
-
             }
 
         }
+
         if (openDialogBox) {
             DatePickerDialog(onDismissRequest = { openDialogBox = false }, confirmButton = {
                 TextButton(onClick = {

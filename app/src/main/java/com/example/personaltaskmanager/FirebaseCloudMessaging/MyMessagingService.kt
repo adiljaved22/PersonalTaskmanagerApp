@@ -14,6 +14,7 @@ import androidx.security.crypto.MasterKey
 import com.example.personaltaskmanager.MainActivity
 import com.example.personaltaskmanager.R
 import com.example.personaltaskmanager.deviceToken
+import com.google.firebase.Firebase
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import kotlin.random.Random
@@ -24,6 +25,7 @@ class MyMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
+
         val sharedPreferences =
             EncryptedSharedPreferences.create(
                 this, "secure_prefs", MasterKey.Builder(this).setKeyScheme(

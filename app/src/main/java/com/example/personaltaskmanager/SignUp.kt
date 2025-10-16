@@ -214,7 +214,7 @@ fun SignUp(navController: NavController, viewModel: TaskViewModel = viewModel())
                 }
                 emailError = when {
                     email.isBlank() -> "Email is required"
-                   /* !isValidEmail(email) -> "Invalid Email"*/
+                    !isValidEmail(email) -> "Invalid Email"
                     else -> ""
                 }
                 passwordError = when {
@@ -254,4 +254,8 @@ fun SignUp(navController: NavController, viewModel: TaskViewModel = viewModel())
         }
     }
 
+}
+
+fun isValidEmail(email: String): Boolean {
+    return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
 }
