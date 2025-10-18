@@ -1,7 +1,10 @@
 package com.example.personaltaskmanager
 
 import android.R.attr.text
+import android.content.Context
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -49,7 +52,9 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.firebase.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.messaging
+import kotlin.apply
 import kotlin.text.isNotEmpty
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -172,7 +177,7 @@ fun Login(
                 onClick = {
                     emailError = when {
                         email.isBlank() -> "Email is required"
-                    !isValidEmail(email) -> "Invalid Email"
+                        !isValidEmail(email) -> "Invalid Email"
                         else -> ""
                     }
                     passwordError = when {
@@ -182,58 +187,23 @@ fun Login(
                     }
                     if (emailError.isEmpty() && passwordError.isEmpty()) {
                         // Login call
-                        viewModel.login(email, password, navController)
-                        sessionManager.saveLogin()
-                        Firebase.messaging.token.addOnCompleteListener {
-                            if (it.isSuccessful) {
-                                val devicetoken = it.result
-                                val devtoken = deviceToken(token = devicetoken)
-                                viewModel.deviceToken(devtoken)
-                                Log.d("FCM TOKEN", "Fetched new token: $devtoken")
+                        viewModel.login(email, password, navController) {
+
+                            sessionManager.saveLogin()
+
+                            val fcmPrefs = context.getSharedPreferences("fcm_prefs", Context.MODE_PRIVATE)
+                            val device = fcmPrefs.getString("device_token", null)
+
+                            device?.let {
+                                Log.d("device token", "$device")
+                                viewModel.deviceToken(deviceToken(it))
                             }
                         }
-                        /*
-                    | Scenario                 | onNewToken() call | SharedPrefs token | Login block        | Firebase.messaging.token call |
-                    | ------------------------ | ----------------- | ----------------- | ------------------ | ----------------------------- |
-                    | First install            | Yes             |  Not yet         | else (fetch token) |  fetch + save + send         |
-                    | App rerun (no reinstall) |  No              |  Already saved   | if (send saved)    |  not called                  |
-                    | Reinstall                |  Yes             |  Not yet         | else (fetch token) |  fetch + save + send         |
-                    */
-                        Firebase.messaging.token.addOnCompleteListener { task ->
-                            if (!task.isSuccessful) {
-                                Log.e("FCM TOKEN", "Fetching failed", task.exception)
-                                return@addOnCompleteListener
-                            }
 
-                            val sharedPreferences = EncryptedSharedPreferences.create(
-                                context,
-                                "secure_prefs",
-                                MasterKey.Builder(context)
-                                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                                    .build(),
-                                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-                            )
 
-                            val savedToken = sharedPreferences.getString("device_token", null)
 
-                            if (savedToken != null) {
-                                // ✅ Already saved token — reuse it
-                                val devtoken = deviceToken(token = savedToken)
-                                viewModel.deviceToken(devtoken)
-                                Log.d("FCM TOKEN", "Reused saved token: $savedToken")
-                            } else {
-                                // ✅ First time or after reinstall — fetch & save
-                                val newToken = task.result
-                                if (newToken != null) {
-                                    val devtoken = deviceToken(token = newToken)
-                                    viewModel.deviceToken(devtoken)
-                                    sharedPreferences.edit().putString("device_token", newToken).apply()
-                                    Log.d("FCM TOKEN", "Fetched & saved new token: $newToken")
-                                }
-                            }
-                        }
-                    } else {
+                    }
+                    else {
                         Toast.makeText(context, "Login Unsuccessful", Toast.LENGTH_LONG).show()
                     }
                 }

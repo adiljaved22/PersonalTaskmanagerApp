@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import coil.compose.rememberAsyncImagePainter
+import com.google.firebase.messaging.FirebaseMessaging
 
 @Composable
 
@@ -35,6 +36,13 @@ fun ProfileScreen(context: Context, logout: () -> Unit) {
         .build()
 
     val sharedPreferences = EncryptedSharedPreferences.create(
+        context,
+        "secure_prefs",
+        masterKey,
+        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+    )
+    val sharedPreference = EncryptedSharedPreferences.create(
         context,
         "secure_prefs",
         masterKey,
@@ -68,7 +76,7 @@ fun ProfileScreen(context: Context, logout: () -> Unit) {
         )
         Spacer(modifier = Modifier.height(12.dp))
 
-        Text(text = "Username: $username", fontSize =10.sp, fontWeight = FontWeight.Medium)
+        Text(text = "Username: $username", fontSize = 10.sp, fontWeight = FontWeight.Medium)
         Spacer(modifier = Modifier.height(12.dp))
         Log.d("all things", "${profile_image},${username},${email}")
 
@@ -78,8 +86,13 @@ fun ProfileScreen(context: Context, logout: () -> Unit) {
         Button(
             shape = RoundedCornerShape(36), onClick = {
                 sessionManager.logout()
-            logout()
-        }) {
+                FirebaseMessaging.getInstance().unsubscribeFromTopic("Tutorial")
+
+                sharedPreference.edit().clear().apply()
+                Log.e("logout", "FCM TOKEN CLEARED")
+                logout()
+            }) {
+
             Text("Logout")
         }
     }

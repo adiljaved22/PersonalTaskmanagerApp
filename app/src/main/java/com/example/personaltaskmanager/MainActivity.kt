@@ -20,6 +20,8 @@ class MainActivity : ComponentActivity() {
 
         FirebaseApp.initializeApp(this)
 
+
+
         setContent {
             PersonalTaskManagerTheme {
                 Navigation()

@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.PendingIntent.FLAG_UPDATE_CURRENT
+import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -27,16 +28,10 @@ class MyMessagingService : FirebaseMessagingService() {
         super.onNewToken(token)
 
         val sharedPreferences =
-            EncryptedSharedPreferences.create(
-                this, "secure_prefs", MasterKey.Builder(this).setKeyScheme(
-                    MasterKey.KeyScheme.AES256_GCM
-                ).build(),
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            )
+            getSharedPreferences("fcm_prefs", Context.MODE_PRIVATE)
         sharedPreferences.edit().putString("device_token", token).apply()
 
-        Log.d(TAG, "Refreshed Token:$token")
+        Log.d(TAG, "install Token:$token")
     }
 
     override fun onMessageReceived(message: RemoteMessage) {

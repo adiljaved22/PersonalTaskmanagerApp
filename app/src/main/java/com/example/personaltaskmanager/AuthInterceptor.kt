@@ -11,18 +11,12 @@ import okhttp3.Response
 class AuthInterceptor(private val context: Context) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
 
-        val sharedPreferences = EncryptedSharedPreferences.create(
-            context,
-            "secure_prefs",
-            MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build(),
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
+        val sharedPreferences = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
 
 
         val token = sharedPreferences.getString("access_token", null)
         Log.d("AuthInterceptor", "Token: $token")
-        val request=chain.request()
+        val request = chain.request()
         if (request.url.encodedPath.contains("/login") || (request.url.encodedPath.contains("/user/sign_up")))
             return chain.proceed(request)
         else {

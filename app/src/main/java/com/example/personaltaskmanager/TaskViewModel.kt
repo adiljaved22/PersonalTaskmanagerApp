@@ -500,18 +500,19 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
-    fun deviceToken(deviceToken: deviceToken){
+
+    fun deviceToken(deviceToken: deviceToken) {
         viewModelScope.launch {
             val response = services.saveDeviceToken(deviceToken)
-            if (response.isSuccessful){
-                Log.d("deviceToken","$response")
-            }
-            else {
-                Log.d("device token don't received","${response.code()}")
+            if (response.isSuccessful) {
+                Log.d("deviceToken", "$response")
+            } else {
+                Log.d("device token don't received", "${response.code()}")
             }
         }
     }
-    fun login(email: String, password: String, navcontroller: NavController) {
+
+    fun login(email: String, password: String, navcontroller: NavController,onsuccess:()->Unit) {
 
         val context = getApplication<Application>().applicationContext
         viewModelScope.launch {
@@ -532,16 +533,8 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                             Toast.LENGTH_LONG
                         ).show()
                         Log.d("token", "$token")
-                        val masterKey = MasterKey.Builder(context)
-                            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                            .build()
-                        val sharedPreferences = EncryptedSharedPreferences.create(
-                            context,
-                            "secure_prefs",
-                            masterKey,
-                            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-                        )
+                        val sharedPreferences =
+                            context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
                         sharedPreferences.edit().putString("access_token", token).apply()
 
                         Toast.makeText(
@@ -552,7 +545,7 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                             Toast.LENGTH_LONG
                         ).show()
                         navcontroller.navigate("home")
-
+onsuccess()
                     } else {
                         Toast.makeText(
                             context,
@@ -564,17 +557,12 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                     Log.d("username", "$username")
                     if (!username.isNullOrEmpty()) {
                         Log.d("username", "$username")
-                        val masterKey = MasterKey.Builder(context)
-                            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
-                        val sharedPreferences = EncryptedSharedPreferences.create(
-                            context,
-                            "secure_prefs",
-                            masterKey,
-                            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-                        )
-                        sharedPreferences.edit().putString("username", username).apply()
 
+                        val sharedPreferences =
+                            context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+
+                        sharedPreferences.edit().putString("username", username).apply()
+                        onsuccess()
                     } else {
                         Toast.makeText(
                             context,
@@ -586,16 +574,10 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
 
                     val email = response.body()?.user?.email
                     if (!email.isNullOrEmpty()) {
-                        val masterKey = MasterKey.Builder(context)
-                            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
-                        val sharedPreferences = EncryptedSharedPreferences.create(
-                            context,
-                            "secure_prefs",
-                            masterKey,
-                            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-                        )
+                        val sharedPreferences =
+                            context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
                         sharedPreferences.edit().putString("email", email).apply()
+                        onsuccess()
                     } else {
                         Toast.makeText(
                             context,
@@ -607,16 +589,10 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
 
                     if (!profile_image.isNullOrEmpty()) {
                         Log.d("profile pix", "$profile_image")
-                        val masterKey = MasterKey.Builder(context)
-                            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
-                        val sharedPreferences = EncryptedSharedPreferences.create(
-                            context,
-                            "secure_prefs",
-                            masterKey,
-                            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-                        )
+                        val sharedPreferences =
+                            context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
                         sharedPreferences.edit().putString("profile_image", profile_image).apply()
+                        onsuccess()
                     } else {
                         Log.d("profile", "profile image not found")
                     }
