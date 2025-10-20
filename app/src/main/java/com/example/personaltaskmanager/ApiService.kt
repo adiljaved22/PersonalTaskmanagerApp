@@ -66,7 +66,7 @@ object RetrofitInstance {
             @Path("task_id") id: Int
         )
 
-        @POST("events/create_event/")
+        @POST("events/create_event")
 
         suspend fun createEvent(@Body request: Events): retrofit2.Response<Events>
 

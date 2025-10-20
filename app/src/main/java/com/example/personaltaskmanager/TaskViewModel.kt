@@ -512,7 +512,12 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun login(email: String, password: String, navcontroller: NavController,onsuccess:()->Unit) {
+    fun login(
+        email: String,
+        password: String,
+        navcontroller: NavController,
+        onsuccess: () -> Unit
+    ) {
 
         val context = getApplication<Application>().applicationContext
         viewModelScope.launch {
@@ -520,32 +525,32 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                 val response = services.login(email, password)
 
                 if (response.isSuccessful) {
+
                     Log.d("response", "$response")
                     val token = response.body()?.token
+                    val username = response.body()?.user?.username
+                    val email = response.body()?.user?.email
+                    val profile_image = response.body()?.user?.profile_image
                     Log.d("token", "$token")
-
-
-
+                    Log.d("username", "$username")
+                    Log.d("email", "$email")
+                    Log.d("profile_image", "$profile_image")
                     if (!token.isNullOrEmpty()) {
-                        Toast.makeText(
-                            context,
-                            "Token Found",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        Log.d("token", "$token")
                         val sharedPreferences =
                             context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-                        sharedPreferences.edit().putString("access_token", token).apply()
+                        sharedPreferences.edit().putString("access_token", token)
+                            .putString("username", username)
+                            .putString("email", email)
+                            .putString("profile_image", profile_image)
+                            .apply()
 
                         Toast.makeText(
-
-
                             context,
                             "Login Successful",
                             Toast.LENGTH_LONG
                         ).show()
                         navcontroller.navigate("home")
-onsuccess()
+                        onsuccess()
                     } else {
                         Toast.makeText(
                             context,
@@ -553,49 +558,7 @@ onsuccess()
                             Toast.LENGTH_LONG
                         ).show()
                     }
-                    val username = response.body()?.user?.username
-                    Log.d("username", "$username")
-                    if (!username.isNullOrEmpty()) {
-                        Log.d("username", "$username")
 
-                        val sharedPreferences =
-                            context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-
-                        sharedPreferences.edit().putString("username", username).apply()
-                        onsuccess()
-                    } else {
-                        Toast.makeText(
-                            context,
-                            "USERNAME NOT FOUND",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-
-
-                    val email = response.body()?.user?.email
-                    if (!email.isNullOrEmpty()) {
-                        val sharedPreferences =
-                            context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-                        sharedPreferences.edit().putString("email", email).apply()
-                        onsuccess()
-                    } else {
-                        Toast.makeText(
-                            context,
-                            "EMAIL NOT FOUND",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                    val profile_image = response.body()?.user?.profile_image
-
-                    if (!profile_image.isNullOrEmpty()) {
-                        Log.d("profile pix", "$profile_image")
-                        val sharedPreferences =
-                            context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-                        sharedPreferences.edit().putString("profile_image", profile_image).apply()
-                        onsuccess()
-                    } else {
-                        Log.d("profile", "profile image not found")
-                    }
                 } else {
 
                     Toast.makeText(

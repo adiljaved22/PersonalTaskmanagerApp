@@ -27,10 +27,10 @@ fun Edit(
     viewModel: TaskViewModel = viewModel()
 ) {
 
-    var name by remember { mutableStateOf("") }
-    var location by remember { mutableStateOf("") }
-    var date by remember{ mutableStateOf("") }
-    var time by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf(EventsToBeEdit.event_name) }
+    var location by remember { mutableStateOf(EventsToBeEdit.location) }
+    var date by remember{ mutableStateOf(EventsToBeEdit.event_date) }
+    var time by remember { mutableStateOf(EventsToBeEdit.event_time) }
 
 
 

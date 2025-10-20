@@ -30,29 +30,10 @@ import com.google.firebase.messaging.FirebaseMessaging
 @Composable
 
 fun ProfileScreen(context: Context, logout: () -> Unit) {
-
-    val masterKey = MasterKey.Builder(context)
-        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-        .build()
-
-    val sharedPreferences = EncryptedSharedPreferences.create(
-        context,
-        "secure_prefs",
-        masterKey,
-        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-    )
-    val sharedPreference = EncryptedSharedPreferences.create(
-        context,
-        "secure_prefs",
-        masterKey,
-        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-    )
-
-    val username = sharedPreferences.getString("username", "")
-    val email = sharedPreferences.getString("email", "")
-    val profile_image = sharedPreferences.getString("profile_image", "")
+    val sharedPreference= context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+    val username = sharedPreference.getString("username", "")
+    val email = sharedPreference.getString("email", "")
+    val profile_image = sharedPreference.getString("profile_image", "")
     val sessionManager = SessionManager(context)
     Log.d("profile pix", "${profile_image}")
     Column(
