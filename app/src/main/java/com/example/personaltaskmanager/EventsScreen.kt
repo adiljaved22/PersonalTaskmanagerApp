@@ -73,9 +73,10 @@ fun EventsScreen(
     viewModel: TaskViewModel = viewModel()
 
 ) {
-    LaunchedEffect(Unit) {
-        viewModel.loadEvents()
-    }
+   LaunchedEffect(Unit) {
+       viewModel.loadEvents()
+   }
+
     var dialogBox by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val coming by viewModel.comingEvent.collectAsState()
@@ -189,7 +190,6 @@ fun EventsScreen(
                                                 Text("Time: ${task.event_time}")
                                             }
                                             IconButton(onClick = {
-
                                                 navController.navigate("Edit/${task.id}")
                                             }) {
                                                 Icon(

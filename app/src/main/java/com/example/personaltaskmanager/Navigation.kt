@@ -1,10 +1,16 @@
-
 package com.example.personaltaskmanager
 
 import android.content.SharedPreferences
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.window.Popup
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -28,7 +34,7 @@ fun Navigation(viewModel: TaskViewModel = viewModel()) {
                         popUpTo("Login") {
                             inclusive = true
                         }
-                        launchSingleTop=true
+                        launchSingleTop = true
                     }
                 },
 
@@ -64,7 +70,8 @@ fun Navigation(viewModel: TaskViewModel = viewModel()) {
             TaskScreen(
                 navController = navController,
                 onBack = {
-                    navController.popBackStack() })
+                    navController.popBackStack()
+                })
         }
         composable("Events")
         {
@@ -80,15 +87,29 @@ fun Navigation(viewModel: TaskViewModel = viewModel()) {
             arguments = listOf(navArgument("taskId") { type = NavType.IntType })
         ) { entry ->
             val taskId = entry.arguments!!.getInt("taskId")
-            val event = viewModel.getEventById(taskId)
-            event?.let {
+            val comingEvents by viewModel.comingEvent.collectAsState()
+            val pastEvents by viewModel.pastEvent.collectAsState()
+            val allEvents = comingEvents + pastEvents
+            val event = allEvents.find { it.id == taskId }
+            if (
+                event == null
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                )
+                {
+                    Text("Loading events......")
+                }
+            } else
                 Edit(
-                    EventsToBeEdit = it,
+                    EventsToBeEdit = event,
                     onBack = { navController.popBackStack() },
 
                     )
-            }
+
         }
+
         composable("AddTask")
         {
             AddTask(
