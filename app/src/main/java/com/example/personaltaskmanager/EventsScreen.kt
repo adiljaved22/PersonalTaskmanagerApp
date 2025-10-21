@@ -73,9 +73,9 @@ fun EventsScreen(
     viewModel: TaskViewModel = viewModel()
 
 ) {
-   LaunchedEffect(Unit) {
-       viewModel.loadEvents()
-   }
+LaunchedEffect(Unit) {
+  viewModel.loadEvents()
+}
 
     var dialogBox by remember { mutableStateOf(false) }
     val context = LocalContext.current

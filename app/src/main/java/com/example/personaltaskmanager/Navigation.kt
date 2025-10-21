@@ -80,6 +80,7 @@ fun Navigation(viewModel: TaskViewModel = viewModel()) {
                 onBack = {
                     navController.popBackStack()
                 },
+                viewModel=viewModel
             )
         }
         composable(
@@ -105,6 +106,7 @@ fun Navigation(viewModel: TaskViewModel = viewModel()) {
                 Edit(
                     EventsToBeEdit = event,
                     onBack = { navController.popBackStack() },
+                    viewModel=viewModel
 
                     )
 
@@ -152,7 +154,8 @@ fun Navigation(viewModel: TaskViewModel = viewModel()) {
                     }
 
                 },
-                onBackCLick = { navController.popBackStack() }
+                onBackCLick = { navController.popBackStack() },
+                viewModel = viewModel
             )
         }
 
