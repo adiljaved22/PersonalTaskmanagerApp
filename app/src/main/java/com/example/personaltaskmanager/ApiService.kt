@@ -23,6 +23,7 @@ import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
+import java.util.concurrent.TimeUnit
 
 object RetrofitInstance {
     private const val BASE_URL = "http://192.168.0.181:8000/"
@@ -32,7 +33,13 @@ object RetrofitInstance {
 
     fun getApiServices(context: Context): ApiServices {
         val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor(context)).addInterceptor(loggingInterceptor).build()
+            .addInterceptor(AuthInterceptor(context))
+            .addInterceptor(loggingInterceptor)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+
+            .build()
 
 
         val retrofit = Retrofit.Builder()

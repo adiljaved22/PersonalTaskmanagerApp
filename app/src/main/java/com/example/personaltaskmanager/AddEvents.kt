@@ -228,7 +228,8 @@ fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit, onBack
         }
 
         if (openDialogBox) {
-            DatePickerDialog(onDismissRequest = { openDialogBox = false }, confirmButton = {
+            DatePickerDialog(onDismissRequest = { openDialogBox = false },
+                confirmButton = {
                 TextButton(onClick = {
                     val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                     date = sdf.format(Date(state.selectedDateMillis ?: 0L))
@@ -250,7 +251,7 @@ fun AddEvents(viewModel: TaskViewModel = viewModel(), onBack: () -> Unit, onBack
         if (openTimeDialog) {
             TimePickerDialog(
                 LocalContext.current, { _, hour: Int, minute: Int ->
-                    time = String.format("%02d:%02d:00", hour, minute)
+                    time = String.format("%02d:%02d", hour, minute)
                     openTimeDialog = false
                 }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true
             ).show()

@@ -21,7 +21,7 @@ import kotlin.String
 
 class TaskViewModel(application: Application) : AndroidViewModel(application) {
 
-    // Retrofit services with AuthInterceptor
+
     private val context = getApplication<Application>().applicationContext
     private val services = RetrofitInstance.getApiServices(context)
 
@@ -36,9 +36,6 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _pastEvent = MutableStateFlow<List<Events>>(emptyList())
     val pastEvent: StateFlow<List<Events>> = _pastEvent
-
-
-
 
     fun loadTasks() {
         viewModelScope.launch {
@@ -59,7 +56,7 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
             val events = services.getEvents()
             try {
 
-                val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
                 val currentDateTime = Date()
 
 
@@ -86,16 +83,10 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             while (true) {
                 loadEvents()
-                delay(2000) // 2 sec
+                delay(2000)
             }
         }
     }
-
-  /*  fun getEventById(id: Int): Events? {
-    val allEvents = _comingEvent.value + _pastEvent.value
-    return allEvents.find { it.id == id }
-    }
-*/
     fun addTask(id: Int, title: String, description: String, location: String, comp: Boolean) {
         viewModelScope.launch {
             try {
@@ -198,7 +189,7 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                 val Response = services.update(eventId, response)
 
                 if (Response.isSuccessful) {
-
+                    delay(1000)
                     loadEvents()
                 } else {
 
