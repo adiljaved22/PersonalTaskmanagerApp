@@ -33,3 +33,11 @@ data class User(
 data class deviceToken(
     val token:String
 )
+data class EmailVerification(
+     val email: String
+)
+data class OTPVerification(
+   val  email: String,
+   val verification_code: String
+
+)

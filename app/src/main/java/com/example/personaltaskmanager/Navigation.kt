@@ -37,10 +37,36 @@ fun Navigation(viewModel: TaskViewModel = viewModel()) {
                         launchSingleTop = true
                     }
                 },
-
+                NavigateToEmailVerification = { navController.navigate("EmailVerification") },
                 NavigateToSignUp = { navController.navigate("SignUp") },
                 navController = navController
             )
+        }
+        composable("EmailVerification")
+        {
+            EmailVerification(
+                viewModel = viewModel,
+                navController = navController,
+                NavigateToEmailVerification = { navController.navigate("EmailVerification") },
+                NavigateToVerificationCode = { navController.navigate("VerificationCode") })
+        }
+        composable(
+            "VerificationCode/{email}", arguments = listOf(
+                navArgument("email")
+                {
+                    type = NavType.StringType
+                }
+            )
+        ) { entry ->
+            val email = entry.arguments?.getString("email")
+
+            VerificationCode(
+                navController = navController,
+                viewModel = viewModel,
+                emailCheck = EmailVerification(email ?: ""),
+                NavigateToSignUp = { navController.navigate("SignUp") },
+
+                )
         }
         composable("SignUp") {
             SignUp(navController = navController)
@@ -80,7 +106,7 @@ fun Navigation(viewModel: TaskViewModel = viewModel()) {
                 onBack = {
                     navController.popBackStack()
                 },
-                viewModel=viewModel
+                viewModel = viewModel
             )
         }
         composable(
@@ -106,9 +132,9 @@ fun Navigation(viewModel: TaskViewModel = viewModel()) {
                 Edit(
                     EventsToBeEdit = event,
                     onBack = { navController.popBackStack() },
-                    viewModel=viewModel
+                    viewModel = viewModel
 
-                    )
+                )
 
         }
 

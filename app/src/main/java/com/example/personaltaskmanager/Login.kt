@@ -63,7 +63,8 @@ import kotlin.text.isNotEmpty
 
 fun Login(
     NavigateToLogin: () -> Unit,
-    NavigateToSignUp: () -> Unit,
+   NavigateToSignUp: () -> Unit,
+    NavigateToEmailVerification:()-> Unit,
     navController: NavController,
     viewModel: TaskViewModel = viewModel()
 ) {
@@ -212,11 +213,11 @@ fun Login(
             }
             Spacer(modifier = Modifier.height(8.dp))
             Row {
-                Text("Already have an account? ")
+                Text("Not a member.")
                 Text(
                     "Sign Up",
                     color = Color.Blue,
-                    modifier = Modifier.clickable { navController.navigate("SignUp") })
+                    modifier = Modifier.clickable { navController.navigate("EmailVerification") })
             }
         }
 

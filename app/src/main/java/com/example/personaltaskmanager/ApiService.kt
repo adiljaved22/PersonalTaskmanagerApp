@@ -56,6 +56,10 @@ object RetrofitInstance {
         @POST("user/save-device-token")
         suspend fun saveDeviceToken(@Body request: deviceToken): retrofit2.Response<deviceToken>
 
+        @POST("user/send-verification-code")
+        suspend fun verifyEmail(@Body request: EmailVerification): retrofit2.Response<EmailVerification>
+        @POST("user/verify-email")
+        suspend fun Verification(@Body request: OTPVerification): retrofit2.Response<OTPVerification>
         @POST("tasks/create_task")
         suspend fun createTask(@Body request: Category): retrofit2.Response<Task>
 

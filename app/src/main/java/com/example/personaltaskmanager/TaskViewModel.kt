@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -21,7 +22,6 @@ import kotlin.String
 
 class TaskViewModel(application: Application) : AndroidViewModel(application) {
 
-
     private val context = getApplication<Application>().applicationContext
     private val services = RetrofitInstance.getApiServices(context)
 
@@ -36,6 +36,7 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _pastEvent = MutableStateFlow<List<Events>>(emptyList())
     val pastEvent: StateFlow<List<Events>> = _pastEvent
+
 
     fun loadTasks() {
         viewModelScope.launch {
@@ -87,6 +88,7 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+
     fun addTask(id: Int, title: String, description: String, location: String, comp: Boolean) {
         viewModelScope.launch {
             try {
@@ -191,8 +193,6 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                 if (Response.isSuccessful) {
                     delay(1000)
                     loadEvents()
-                } else {
-
                 }
 
 
@@ -298,4 +298,35 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+
+    fun emailVerification(email: String) {
+        viewModelScope.launch {
+            try {
+                val response = services.verifyEmail(EmailVerification(email))
+                if (response.isSuccessful) {
+
+                    Log.e("email verify", "$response")
+                } else {
+                    Log.e("not verify ", "$response")
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+    }
+
+    fun OTPVerification(email: String, verificationCode: String,onResult: (Boolean) -> Unit){
+        viewModelScope.launch {
+            try {
+                val response = services.Verification(OTPVerification(email, verificationCode))
+                onResult(response.isSuccessful)
+            } catch (e: Exception) {
+                Log.e("OTP not Verified", "$e")
+                onResult(false)
+            }
+        }
+
+    }
+
 }
